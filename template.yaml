@@ -1,0 +1,113 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: BrickHub Mobile backend - ambiente dev
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+  BricksetSecretArn:
+    Type: String
+    Description: ARN del secreto de Brickset en AWS Secrets Manager
+
+Globals:
+  Function:
+    Runtime: nodejs24.x
+    Architectures:
+      - arm64
+    MemorySize: 128
+    Timeout: 5
+    Tracing: Active
+    Environment:
+      Variables:
+        APP_ENV: !Ref Environment
+
+Resources:
+  BrickHubApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: $default
+
+  HelloFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub brickhub-${Environment}-hello
+      CodeUri: .
+      Handler: src/handlers/hello.handler
+      Description: Endpoint inicial para comprobar que BrickHub API funciona
+      Policies:
+        - AWSLambdaBasicExecutionRole
+      Events:
+        Hello:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: GET
+            Path: /v1/hello
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/hello.ts
+        Minify: true
+        Sourcemap: true
+        Target: es2022
+
+  HelloFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub /aws/lambda/brickhub-${Environment}-hello
+      RetentionInDays: 14
+
+  SearchSetsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub brickhub-${Environment}-search-sets
+      CodeUri: .
+      Handler: src/handlers/get-sets.handler
+      Description: Busca sets de catálogo mediante Brickset
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Ref BricksetSecretArn
+      Environment:
+        Variables:
+          BRICKSET_SECRET_ARN: !Ref BricksetSecretArn
+      Events:
+        SearchSets:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: GET
+            Path: /v1/sets
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints:
+          - src/handlers/get-sets.ts
+        Minify: true
+        Sourcemap: true
+        Target: es2022
+
+  SearchSetsFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub /aws/lambda/brickhub-${Environment}-search-sets
+      RetentionInDays: 14
+
+Outputs:
+  ApiUrl:
+    Description: URL base de BrickHub API
+    Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}
+  HelloUrl:
+    Description: Endpoint de prueba
+    Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/hello
+  SearchSetsUrl:
+    Description: Endpoint de búsqueda de sets
+    Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/sets

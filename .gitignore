@@ -1,0 +1,9 @@
+node_modules/
+.aws-sam/
+coverage/
+.env*
+env/dev.json
+env/*.local.json
+dist/
+build/
+npm-debug.log*

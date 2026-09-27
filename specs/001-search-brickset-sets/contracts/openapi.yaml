@@ -1,0 +1,60 @@
+openapi: 3.0.3
+info:
+  title: BrickHub Catalog API
+  version: 1.0.0
+paths:
+  /v1/sets:
+    get:
+      summary: Busca sets LEGO en el catálogo Brickset
+      operationId: searchSets
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema: { type: string, minLength: 1 }
+          example: '10212'
+        - name: pageNumber
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 500, default: 20 }
+      responses:
+        '200':
+          description: Búsqueda completada, incluso sin coincidencias
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SetSearchResult' }
+        '400':
+          description: Parámetros de búsqueda inválidos
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '429':
+          description: Brickset limitó temporalmente la consulta
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '502':
+          description: Brickset no pudo atender una respuesta válida
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+components:
+  schemas:
+    SetSearchResult:
+      type: object
+      required: [status, matches, sets]
+      properties:
+        status: { type: string, enum: [success] }
+        matches: { type: integer, minimum: 0 }
+        sets:
+          type: array
+          items: { type: object, additionalProperties: true }
+    ErrorResponse:
+      type: object
+      required: [status, code, message]
+      properties:
+        status: { type: string, enum: [error] }
+        code: { type: string }
+        message: { type: string }
