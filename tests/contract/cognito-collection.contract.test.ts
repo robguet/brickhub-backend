@@ -10,7 +10,12 @@ describe("collection identity infrastructure", () => {
     expect(template).toContain("GenerateSecret: false");
     expect(template).toContain("AllowedOAuthFlows: [code]");
     expect(template).toContain("CognitoJwtAuthorizer");
+    expect(template).toContain(
+      "SearchSets:\n          Type: HttpApi\n          Properties:\n            ApiId: !Ref BrickHubApi\n            Method: GET\n            Path: /v1/sets\n            Auth: { Authorizer: CognitoJwtAuthorizer }",
+    );
     expect(template).toContain("SupportedIdentityProviders: [COGNITO]");
+    expect(template).not.toContain("AWS::Cognito::UserPoolResourceServer");
+    expect(template).not.toContain("AuthorizationScopes:");
     expect(template).toContain("dynamodb:Query");
     expect(template).toContain("TableName: !Sub brickhub-${Environment}-user-data");
     expect(template).toContain("USER_DATA_TABLE_NAME: !Ref UserDataTable");

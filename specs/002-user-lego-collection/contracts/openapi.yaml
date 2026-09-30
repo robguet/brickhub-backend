@@ -8,7 +8,7 @@ paths:
     get:
       summary: Lista los sets de la colección autenticada
       operationId: listCollectionSets
-      security: [{ CognitoAccessToken: [lego-collection/sets.read] }]
+      security: [{ CognitoAccessToken: [] }]
       parameters:
         - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
         - { name: cursor, in: query, schema: { type: string, maxLength: 2048 } }
@@ -20,7 +20,7 @@ paths:
     post:
       summary: Añade un set a la colección autenticada
       operationId: createCollectionSet
-      security: [{ CognitoAccessToken: [lego-collection/sets.write] }]
+      security: [{ CognitoAccessToken: [] }]
       requestBody:
         required: true
         content: { application/json: { schema: { $ref: '#/components/schemas/CreateCollectionSetInput' } } }
@@ -39,7 +39,7 @@ paths:
     patch:
       summary: Edita un set propio
       operationId: updateCollectionSet
-      security: [{ CognitoAccessToken: [lego-collection/sets.write] }]
+      security: [{ CognitoAccessToken: [] }]
       requestBody:
         required: true
         content: { application/json: { schema: { $ref: '#/components/schemas/UpdateCollectionSetInput' } } }
@@ -52,7 +52,7 @@ paths:
     delete:
       summary: Elimina un set propio
       operationId: deleteCollectionSet
-      security: [{ CognitoAccessToken: [lego-collection/sets.write] }]
+      security: [{ CognitoAccessToken: [] }]
       responses:
         '200': { description: Eliminación confirmada, content: { application/json: { schema: { $ref: '#/components/schemas/DeleteCollectionSetResponse' } } } }
         '400': { $ref: '#/components/responses/ValidationError' }
@@ -62,14 +62,9 @@ paths:
 components:
   securitySchemes:
     CognitoAccessToken:
-      type: oauth2
-      flows:
-        authorizationCode:
-          authorizationUrl: https://cognito.example.com/oauth2/authorize
-          tokenUrl: https://cognito.example.com/oauth2/token
-          scopes:
-            lego-collection/sets.read: Leer la colección propia.
-            lego-collection/sets.write: Modificar la colección propia.
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   responses:
     ValidationError:
       description: Entrada inválida

@@ -5,7 +5,7 @@ info:
 paths:
   /v1/sets:
     get:
-      summary: Busca sets LEGO en el catálogo Brickset para un usuario autorizado
+      summary: Busca sets LEGO en el catálogo Brickset para un usuario autenticado
       operationId: searchSets
       security: [{ CognitoAccessToken: [] }]
       parameters:
