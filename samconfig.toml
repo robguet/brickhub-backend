@@ -24,3 +24,17 @@ parameter_overrides = "Environment=dev BricksetSecretArn=arn:aws:secretsmanager:
 
 [dev.sync.parameters]
 watch = true
+
+[default.deploy.parameters]
+stack_name = "brickhub-dev"
+resolve_s3 = true
+s3_prefix = "brickhub-dev"
+profile = "brickhub-dev"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+parameter_overrides = "Environment=\"dev\" BricksetSecretArn=\"arn:aws:secretsmanager:us-east-1:255358858742:secret:brickset-iujkYw\" IosCallbackUrl=\"brickhub://auth/callback\" CognitoDomainPrefix=\"brickhub-dev\""
+image_repositories = []
+
+[default.global.parameters]
+region = "us-east-1"

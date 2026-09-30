@@ -11,6 +11,12 @@ Parameters:
   BricksetSecretArn:
     Type: String
     Description: ARN del secreto de Brickset en AWS Secrets Manager
+  IosCallbackUrl:
+    Type: String
+    Description: Callback URL registrado para BrickHub iOS
+  CognitoDomainPrefix:
+    Type: String
+    Description: Prefijo único para el dominio administrado de Cognito
 
 Globals:
   Function:
@@ -29,6 +35,87 @@ Resources:
     Type: AWS::Serverless::HttpApi
     Properties:
       StageName: $default
+      Auth:
+        Authorizers:
+          CognitoJwtAuthorizer:
+            IdentitySource: $request.header.Authorization
+            JwtConfiguration:
+              issuer: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${BrickHubUserPool}
+              audience:
+                - !Ref BrickHubIosAppClient
+
+  BrickHubUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub brickhub-${Environment}-users
+      UsernameAttributes: [email]
+      AutoVerifiedAttributes: [email]
+      Schema:
+        - Name: email
+          Required: true
+          Mutable: true
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 12
+          RequireLowercase: true
+          RequireUppercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+
+  BrickHubCollectionResourceServer:
+    Type: AWS::Cognito::UserPoolResourceServer
+    Properties:
+      UserPoolId: !Ref BrickHubUserPool
+      Identifier: lego-collection
+      Name: BrickHub collection
+      Scopes:
+        - ScopeName: sets.read
+          ScopeDescription: Leer la colección propia
+        - ScopeName: sets.write
+          ScopeDescription: Modificar la colección propia
+
+  BrickHubUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Ref CognitoDomainPrefix
+      UserPoolId: !Ref BrickHubUserPool
+
+  BrickHubIosAppClient:
+    Type: AWS::Cognito::UserPoolClient
+    DependsOn: BrickHubCollectionResourceServer
+    Properties:
+      UserPoolId: !Ref BrickHubUserPool
+      ClientName: !Sub brickhub-${Environment}-ios
+      GenerateSecret: false
+      SupportedIdentityProviders: [COGNITO]
+      ExplicitAuthFlows: [ALLOW_USER_SRP_AUTH, ALLOW_USER_PASSWORD_AUTH, ALLOW_REFRESH_TOKEN_AUTH]
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows: [code]
+      AllowedOAuthScopes: [openid, email, profile, lego-collection/sets.read, lego-collection/sets.write]
+      CallbackURLs: [!Ref IosCallbackUrl]
+      LogoutURLs: [!Ref IosCallbackUrl]
+
+  UserDataTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Sub brickhub-${Environment}-user-data
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
 
   HelloFunction:
     Type: AWS::Serverless::Function
@@ -101,6 +188,114 @@ Resources:
       LogGroupName: !Sub /aws/lambda/brickhub-${Environment}-search-sets
       RetentionInDays: 14
 
+  CollectionSetsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub brickhub-${Environment}-collection-sets
+      CodeUri: .
+      Handler: src/handlers/collection-sets.handler
+      Description: CRUD privado de colección LEGO
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            Effect: Allow
+            Action: [dynamodb:PutItem, dynamodb:Query, dynamodb:UpdateItem, dynamodb:DeleteItem]
+            Resource: !GetAtt UserDataTable.Arn
+      Environment:
+        Variables:
+          USER_DATA_TABLE_NAME: !Ref UserDataTable
+      Events:
+        ListCollectionSets:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: GET
+            Path: /v1/collection/sets
+            Auth: { Authorizer: CognitoJwtAuthorizer, AuthorizationScopes: [lego-collection/sets.read] }
+        CreateCollectionSet:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: POST
+            Path: /v1/collection/sets
+            Auth: { Authorizer: CognitoJwtAuthorizer, AuthorizationScopes: [lego-collection/sets.write] }
+        UpdateCollectionSet:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: PATCH
+            Path: /v1/collection/sets/{collectionSetId}
+            Auth: { Authorizer: CognitoJwtAuthorizer, AuthorizationScopes: [lego-collection/sets.write] }
+        DeleteCollectionSet:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: DELETE
+            Path: /v1/collection/sets/{collectionSetId}
+            Auth: { Authorizer: CognitoJwtAuthorizer, AuthorizationScopes: [lego-collection/sets.write] }
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints: [src/handlers/collection-sets.ts]
+        Minify: true
+        Sourcemap: true
+        Target: es2022
+
+  CollectionSetsFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub /aws/lambda/brickhub-${Environment}-collection-sets
+      RetentionInDays: 14
+
+  ProfileFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub brickhub-${Environment}-profile
+      CodeUri: .
+      Handler: src/handlers/profile.handler
+      Description: Perfil privado asociado a la identidad autenticada
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            Effect: Allow
+            Action: [dynamodb:GetItem, dynamodb:PutItem]
+            Resource: !GetAtt UserDataTable.Arn
+      Environment:
+        Variables:
+          USER_DATA_TABLE_NAME: !Ref UserDataTable
+      Events:
+        GetProfile:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: GET
+            Path: /v1/profile
+            Auth: { Authorizer: CognitoJwtAuthorizer }
+        InitializeProfile:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: PUT
+            Path: /v1/profile
+            Auth: { Authorizer: CognitoJwtAuthorizer }
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints: [src/handlers/profile.ts]
+        Minify: true
+        Sourcemap: true
+        Target: es2022
+
+  ProfileFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub /aws/lambda/brickhub-${Environment}-profile
+      RetentionInDays: 14
+
 Outputs:
   ApiUrl:
     Description: URL base de BrickHub API
@@ -111,3 +306,18 @@ Outputs:
   SearchSetsUrl:
     Description: Endpoint de búsqueda de sets
     Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/sets
+  CollectionSetsUrl:
+    Description: URL de colección protegida
+    Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/collection/sets
+  ProfileUrl:
+    Description: URL de perfil protegido
+    Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/profile
+  CognitoUserPoolId:
+    Description: User Pool para clientes autorizados
+    Value: !Ref BrickHubUserPool
+  CognitoIosAppClientId:
+    Description: App Client público de iOS
+    Value: !Ref BrickHubIosAppClient
+  UserDataTableName:
+    Description: Tabla compartida de perfiles y colecciones de usuario
+    Value: !Ref UserDataTable

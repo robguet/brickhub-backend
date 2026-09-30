@@ -22,3 +22,30 @@ export function errorResponse(
 export function safeLogError(context: { event: string; code: ErrorCode; requestId?: string }): void {
   console.error(JSON.stringify(context));
 }
+
+const collectionJsonHeaders = {
+  "content-type": "application/json; charset=utf-8",
+} as const;
+
+export function collectionSuccessResponse(
+  statusCode: 200 | 201,
+  data: unknown,
+): APIGatewayProxyStructuredResultV2 {
+  return { statusCode, headers: collectionJsonHeaders, body: JSON.stringify({ status: "success", data }) };
+}
+
+export function collectionErrorResponse(
+  statusCode: 400 | 401 | 404 | 409 | 500,
+  code: string,
+  message: string,
+): APIGatewayProxyStructuredResultV2 {
+  return {
+    statusCode,
+    headers: collectionJsonHeaders,
+    body: JSON.stringify({ status: "error", code, message }),
+  };
+}
+
+export function profileSuccessResponse(data: { profile: unknown; created?: boolean }): APIGatewayProxyStructuredResultV2 {
+  return { statusCode: 200, headers: collectionJsonHeaders, body: JSON.stringify({ status: "success", ...data }) };
+}

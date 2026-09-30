@@ -7,3 +7,7 @@ env/*.local.json
 dist/
 build/
 npm-debug.log*
+*.log
+.DS_Store
+*.tmp
+*.swp

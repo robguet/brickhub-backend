@@ -1,0 +1,69 @@
+openapi: 3.0.3
+info:
+  title: BrickHub Profile API
+  version: 1.0.0
+paths:
+  /v1/profile:
+    get:
+      operationId: getProfile
+      summary: Recupera el perfil de la identidad autenticada
+      security: [{ CognitoAccessToken: [] }]
+      responses:
+        '200': { description: Perfil recuperado, content: { application/json: { schema: { $ref: '#/components/schemas/ProfileResponse' } } } }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/ProfileNotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    put:
+      operationId: initializeProfile
+      summary: Crea o devuelve idempotentemente el perfil propio
+      security: [{ CognitoAccessToken: [] }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/InitializeProfileInput' } } }
+      responses:
+        '200': { description: Perfil creado o existente, content: { application/json: { schema: { $ref: '#/components/schemas/ProfileResponse' } } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '500': { $ref: '#/components/responses/InternalError' }
+components:
+  securitySchemes:
+    CognitoAccessToken: { type: http, scheme: bearer, bearerFormat: JWT }
+  responses:
+    ValidationError: { description: Body inválido, content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+    Unauthenticated: { description: JWT inválido o ausente, content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+    ProfileNotFound: { description: Perfil aún no inicializado, content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+    InternalError: { description: Error interno seguro, content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+  schemas:
+    UserProfile:
+      type: object
+      required: [userId, email, displayName, defaultMarket, authProviders, createdAt, updatedAt]
+      properties:
+        userId: { type: string, format: uuid }
+        email: { type: string, format: email, maxLength: 254 }
+        displayName: { type: string, minLength: 1, maxLength: 100 }
+        defaultMarket: { type: string, enum: [MX, US, ES] }
+        authProviders: { type: array, items: { type: string }, minItems: 1 }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    InitializeProfileInput:
+      type: object
+      additionalProperties: false
+      required: [email, displayName, defaultMarket]
+      properties:
+        email: { type: string, format: email, maxLength: 254 }
+        displayName: { type: string, minLength: 1, maxLength: 100 }
+        defaultMarket: { type: string, enum: [MX, US, ES] }
+    ProfileResponse:
+      type: object
+      required: [status, profile]
+      properties:
+        status: { type: string, enum: [success] }
+        profile: { $ref: '#/components/schemas/UserProfile' }
+        created: { type: boolean }
+    ErrorResponse:
+      type: object
+      required: [status, code, message]
+      properties:
+        status: { type: string, enum: [error] }
+        code: { type: string, enum: [VALIDATION_ERROR, UNAUTHENTICATED, PROFILE_NOT_FOUND, INTERNAL_ERROR] }
+        message: { type: string }

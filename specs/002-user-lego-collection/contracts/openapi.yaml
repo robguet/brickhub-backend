@@ -1,0 +1,171 @@
+openapi: 3.0.3
+info:
+  title: BrickHub Collection API
+  version: 1.0.0
+  description: Operaciones privadas sobre la colección LEGO del usuario autenticado.
+paths:
+  /v1/collection/sets:
+    get:
+      summary: Lista los sets de la colección autenticada
+      operationId: listCollectionSets
+      security: [{ CognitoAccessToken: [lego-collection/sets.read] }]
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+        - { name: cursor, in: query, schema: { type: string, maxLength: 2048 } }
+      responses:
+        '200': { description: Página de colección, content: { application/json: { schema: { $ref: '#/components/schemas/CollectionPageResponse' } } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      summary: Añade un set a la colección autenticada
+      operationId: createCollectionSet
+      security: [{ CognitoAccessToken: [lego-collection/sets.write] }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/CreateCollectionSetInput' } } }
+      responses:
+        '201': { description: Set creado, content: { application/json: { schema: { $ref: '#/components/schemas/CollectionSetResponse' } } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '500': { $ref: '#/components/responses/InternalError' }
+  /v1/collection/sets/{collectionSetId}:
+    parameters:
+      - name: collectionSetId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    patch:
+      summary: Edita un set propio
+      operationId: updateCollectionSet
+      security: [{ CognitoAccessToken: [lego-collection/sets.write] }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/UpdateCollectionSetInput' } } }
+      responses:
+        '200': { description: Set actualizado, content: { application/json: { schema: { $ref: '#/components/schemas/CollectionSetResponse' } } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+    delete:
+      summary: Elimina un set propio
+      operationId: deleteCollectionSet
+      security: [{ CognitoAccessToken: [lego-collection/sets.write] }]
+      responses:
+        '200': { description: Eliminación confirmada, content: { application/json: { schema: { $ref: '#/components/schemas/DeleteCollectionSetResponse' } } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+components:
+  securitySchemes:
+    CognitoAccessToken:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://cognito.example.com/oauth2/authorize
+          tokenUrl: https://cognito.example.com/oauth2/token
+          scopes:
+            lego-collection/sets.read: Leer la colección propia.
+            lego-collection/sets.write: Modificar la colección propia.
+  responses:
+    ValidationError:
+      description: Entrada inválida
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+    Unauthenticated:
+      description: Token inválido, vencido o insuficiente
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+    NotFound:
+      description: Set inexistente o no accesible para la identidad autenticada
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+    Conflict:
+      description: Conflicto de creación no recuperable
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+    InternalError:
+      description: Error interno seguro
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+  schemas:
+    CollectionSet:
+      type: object
+      required: [collectionSetId, catalogSetId, quantity, condition, notes, acquiredOn, createdAt, updatedAt]
+      properties:
+        collectionSetId: { type: string, format: uuid }
+        catalogSetId: { type: integer, minimum: 1 }
+        quantity: { type: integer, minimum: 1, maximum: 99 }
+        condition: { type: string, enum: [sealed, new, used, incomplete] }
+        notes: { type: string, nullable: true, maxLength: 1000 }
+        acquiredOn: { type: string, format: date, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    CreateCollectionSetInput:
+      type: object
+      additionalProperties: false
+      required: [catalogSetId]
+      properties:
+        catalogSetId: { type: integer, minimum: 1 }
+        quantity: { type: integer, minimum: 1, maximum: 99, default: 1 }
+        condition: { type: string, enum: [sealed, new, used, incomplete], default: used }
+        notes: { type: string, nullable: true, maxLength: 1000 }
+        acquiredOn: { type: string, format: date, nullable: true }
+    UpdateCollectionSetInput:
+      type: object
+      additionalProperties: false
+      minProperties: 1
+      properties:
+        quantity: { type: integer, minimum: 1, maximum: 99 }
+        condition: { type: string, enum: [sealed, new, used, incomplete] }
+        notes: { type: string, nullable: true, maxLength: 1000 }
+        acquiredOn: { type: string, format: date, nullable: true }
+    CollectionSetResponse:
+      type: object
+      required: [status, data]
+      properties:
+        status: { type: string, enum: [success] }
+        data:
+          type: object
+          required: [set]
+          properties: { set: { $ref: '#/components/schemas/CollectionSet' } }
+    CollectionPageResponse:
+      type: object
+      required: [status, data]
+      properties:
+        status: { type: string, enum: [success] }
+        data:
+          type: object
+          required: [items, page]
+          properties:
+            items: { type: array, items: { $ref: '#/components/schemas/CollectionSet' } }
+            page:
+              type: object
+              required: [limit, nextCursor]
+              properties:
+                limit: { type: integer, minimum: 1, maximum: 100 }
+                nextCursor: { type: string, nullable: true }
+    DeleteCollectionSetResponse:
+      type: object
+      required: [status, data]
+      properties:
+        status: { type: string, enum: [success] }
+        data:
+          type: object
+          required: [collectionSetId, deleted]
+          properties:
+            collectionSetId: { type: string, format: uuid }
+            deleted: { type: boolean, enum: [true] }
+    ErrorResponse:
+      type: object
+      required: [status, code, message]
+      properties:
+        status: { type: string, enum: [error] }
+        code: { type: string, enum: [VALIDATION_ERROR, UNAUTHENTICATED, RESOURCE_NOT_FOUND, CONFLICT, RATE_LIMITED, INTERNAL_ERROR] }
+        message: { type: string }
+        details:
+          type: array
+          items:
+            type: object
+            required: [field, issue]
+            properties:
+              field: { type: string }
+              issue: { type: string }

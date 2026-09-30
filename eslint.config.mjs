@@ -5,7 +5,6 @@ export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    ignores: [".aws-sam/**", "coverage/**", "node_modules/**"],
+    ignores: [".aws-sam/**", "coverage/**", "node_modules/**", "dist/**", "build/**"],
   },
 );
-
