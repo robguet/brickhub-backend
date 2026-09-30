@@ -27,6 +27,15 @@ obtienen las credenciales desde Secrets Manager. El secreto JSON contiene
 `BRICKSET_API_KEY` y `BRICKSET_USER_HASH`. Nunca guardes estas credenciales en
 código, logs ni configuración local.
 
+```http
+POST /v1/saved-sets
+Authorization: Bearer <Cognito access token>
+```
+
+Guarda un snapshot de un set en `collection` o `wishlist` para el usuario del
+token. El contrato completo, incluidos campos y respuestas idempotentes, está en
+[`specs/005-save-user-set/contracts/openapi.yaml`](specs/005-save-user-set/contracts/openapi.yaml).
+
 ## Requisitos locales
 
 - Node.js 20 o posterior para desarrollo local (Lambda usa Node.js 24)

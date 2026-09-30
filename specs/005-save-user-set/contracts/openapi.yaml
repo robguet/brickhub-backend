@@ -1,0 +1,114 @@
+openapi: 3.0.3
+info:
+  title: BrickHub Saved Sets API
+  version: 1.0.0
+  description: Operación privada para guardar snapshots de sets en colección o wishlist.
+paths:
+  /v1/saved-sets:
+    post:
+      summary: Guarda un set para el usuario autenticado
+      operationId: saveUserSet
+      security: [{ CognitoAccessToken: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SaveUserSetInput' }
+      responses:
+        '201':
+          description: Set guardado por primera vez
+          content: { application/json: { schema: { $ref: '#/components/schemas/SavedSetResponse' } } }
+        '200':
+          description: Reintento idempotente o cambio de destination; el único registro del set fue conservado o movido
+          content: { application/json: { schema: { $ref: '#/components/schemas/SavedSetResponse' } } }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '500': { $ref: '#/components/responses/InternalError' }
+components:
+  securitySchemes:
+    CognitoAccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    ValidationError:
+      description: El destino o la ficha del set son inválidos.
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+    Unauthenticated:
+      description: Falta o es inválido el Bearer JWT.
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+    InternalError:
+      description: Error interno seguro.
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+  schemas:
+    SaveUserSetInput:
+      type: object
+      additionalProperties: false
+      required: [destination, set]
+      properties:
+        destination: { type: string, enum: [collection, wishlist] }
+        set: { $ref: '#/components/schemas/SetSnapshotInput' }
+    SetSnapshotInput:
+      type: object
+      additionalProperties: false
+      required: [setID, number, numberVariant, name, year, theme, category, released, pieces]
+      properties:
+        setID: { type: integer, minimum: 1 }
+        number: { type: string, minLength: 1, maxLength: 64 }
+        numberVariant: { type: integer, minimum: 0 }
+        name: { type: string, minLength: 1, maxLength: 500 }
+        year: { type: integer, minimum: 1949, maximum: 2100 }
+        theme: { type: string, minLength: 1, maxLength: 200 }
+        subtheme: { type: string, minLength: 1, maxLength: 200 }
+        category: { type: string, minLength: 1, maxLength: 100 }
+        released: { type: boolean }
+        pieces: { type: integer, minimum: 0 }
+        launchDate: { type: string, format: date-time }
+        exitDate: { type: string, format: date-time }
+        image: { $ref: '#/components/schemas/SetImage' }
+        bricksetURL: { type: string, format: uri }
+        rating: { type: number, minimum: 0, maximum: 5 }
+        ratingCount: { type: integer, minimum: 0 }
+        reviewCount: { type: integer, minimum: 0 }
+        packagingType: { type: string, minLength: 1, maxLength: 100 }
+        barcode: { $ref: '#/components/schemas/Barcode' }
+        lastUpdated: { type: string, format: date-time }
+    SetImage:
+      type: object
+      additionalProperties: false
+      required: [thumbnailURL, imageURL]
+      properties:
+        thumbnailURL: { type: string, format: uri }
+        imageURL: { type: string, format: uri }
+    Barcode:
+      type: object
+      additionalProperties: false
+      required: [EAN]
+      properties:
+        EAN: { type: string, pattern: '^[0-9]{8,14}$' }
+    SavedSet:
+      type: object
+      required: [destination, set, createdAt, updatedAt, created]
+      properties:
+        destination: { type: string, enum: [collection, wishlist] }
+        set: { $ref: '#/components/schemas/SetSnapshotInput' }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        created: { type: boolean }
+    SavedSetResponse:
+      type: object
+      required: [status, data]
+      properties:
+        status: { type: string, enum: [success] }
+        data:
+          type: object
+          required: [savedSet]
+          properties:
+            savedSet: { $ref: '#/components/schemas/SavedSet' }
+    ErrorResponse:
+      type: object
+      required: [status, code, message]
+      properties:
+        status: { type: string, enum: [error] }
+        code: { type: string, enum: [VALIDATION_ERROR, UNAUTHENTICATED, INTERNAL_ERROR] }
+        message: { type: string }

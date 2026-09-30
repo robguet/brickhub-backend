@@ -237,6 +237,46 @@ Resources:
       LogGroupName: !Sub /aws/lambda/brickhub-${Environment}-collection-sets
       RetentionInDays: 14
 
+  SaveUserSetFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub brickhub-${Environment}-save-user-set
+      CodeUri: .
+      Handler: src/handlers/save-user-set.handler
+      Description: Guarda snapshots privados de sets en colección o wishlist
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            Effect: Allow
+            Action: [dynamodb:PutItem, dynamodb:UpdateItem]
+            Resource: !GetAtt UserDataTable.Arn
+      Environment:
+        Variables:
+          USER_DATA_TABLE_NAME: !Ref UserDataTable
+      Events:
+        SaveUserSet:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: POST
+            Path: /v1/saved-sets
+            Auth: { Authorizer: CognitoJwtAuthorizer }
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints: [src/handlers/save-user-set.ts]
+        Minify: true
+        Sourcemap: true
+        Target: es2022
+
+  SaveUserSetFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub /aws/lambda/brickhub-${Environment}-save-user-set
+      RetentionInDays: 14
+
   ProfileFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -297,6 +337,9 @@ Outputs:
   CollectionSetsUrl:
     Description: URL de colección protegida
     Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/collection/sets
+  SavedSetsUrl:
+    Description: URL para guardar sets protegida
+    Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/saved-sets
   ProfileUrl:
     Description: URL de perfil protegido
     Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/profile
