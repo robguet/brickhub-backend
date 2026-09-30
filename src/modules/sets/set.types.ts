@@ -28,7 +28,7 @@ export interface BricksetSet {
   bricksetURL?: string;
   collection?: Record<string, unknown> | null;
   collections?: Record<string, unknown> | null;
-  lEGOCom?: Record<string, unknown> | null;
+  LEGOCom?: Record<string, LegoComAvailability> | null;
   rating?: number | null;
   ratingCount?: number | null;
   reviewCount?: number | null;
@@ -44,6 +44,12 @@ export interface BricksetSet {
   extendedData?: Record<string, unknown> | null;
   lastUpdated?: string | null;
   [key: string]: unknown;
+}
+
+export interface LegoComAvailability {
+  retailPrice?: number | null;
+  dateFirstAvailable?: string | null;
+  dateLastAvailable?: string | null;
 }
 
 export interface SetSearchResult {

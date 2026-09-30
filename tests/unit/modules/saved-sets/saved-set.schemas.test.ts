@@ -9,6 +9,7 @@ const valid = {
     theme: "Star Wars", category: "Normal", released: true, pieces: 74,
     launchDate: "2026-04-26T00:00:00Z", image: { thumbnailURL: "https://images.brickset.com/s.jpg", imageURL: "https://images.brickset.com/l.jpg" },
     barcode: { EAN: "5702018058121" },
+    LEGOCom: { US: { retailPrice: 259.99, dateFirstAvailable: "2010-09-02T00:00:00Z", dateLastAvailable: "2012-12-20T00:00:00Z" } },
   },
 };
 
@@ -26,6 +27,8 @@ describe("save user set schema", () => {
     expect(saveUserSetSchema.safeParse({ ...valid, set: { ...valid.set, launchDate: "2026-04-26" } }).success).toBe(false);
     expect(saveUserSetSchema.safeParse({ ...valid, set: { ...valid.set, image: { thumbnailURL: "http://image", imageURL: "https://image" } } }).success).toBe(false);
     expect(saveUserSetSchema.safeParse({ ...valid, set: { ...valid.set, barcode: { EAN: "123" } } }).success).toBe(false);
+    expect(saveUserSetSchema.safeParse({ ...valid, set: { ...valid.set, LEGOCom: { USA: { retailPrice: 259.99 } } } }).success).toBe(false);
+    expect(saveUserSetSchema.safeParse({ ...valid, set: { ...valid.set, LEGOCom: { US: { retailPrice: -1 } } } }).success).toBe(false);
     expect(saveUserSetSchema.safeParse({ ...valid, set: { ...valid.set, unexpected: true } }).success).toBe(false);
   });
 });

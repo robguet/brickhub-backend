@@ -1,27 +1,20 @@
 openapi: 3.0.3
 info:
-  title: BrickHub Saved Sets API
+  title: BrickHub Saved Sets Listing API
   version: 1.0.0
-  description: Operación privada para guardar snapshots de sets en colección o wishlist.
+  description: Private operation that returns the authenticated user's saved catalog snapshots separated by destination.
 paths:
   /v1/saved-sets:
-    post:
-      summary: Guarda un set para el usuario autenticado
-      operationId: saveUserSet
+    get:
+      summary: List saved sets for the authenticated user
+      operationId: listSavedSets
       security: [{ CognitoAccessToken: [] }]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/SaveUserSetInput' }
       responses:
-        '201':
-          description: Set guardado por primera vez
-          content: { application/json: { schema: { $ref: '#/components/schemas/SavedSetResponse' } } }
         '200':
-          description: Reintento idempotente o cambio de destination; el único registro del set fue conservado o movido
-          content: { application/json: { schema: { $ref: '#/components/schemas/SavedSetResponse' } } }
-        '400': { $ref: '#/components/responses/ValidationError' }
+          description: Saved sets grouped by destination. Both arrays are always present.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SavedSetsListResponse' }
         '401': { $ref: '#/components/responses/Unauthenticated' }
         '500': { $ref: '#/components/responses/InternalError' }
 components:
@@ -31,24 +24,39 @@ components:
       scheme: bearer
       bearerFormat: JWT
   responses:
-    ValidationError:
-      description: El destino o la ficha del set son inválidos.
-      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
     Unauthenticated:
-      description: Falta o es inválido el Bearer JWT.
+      description: The Bearer JWT is missing or invalid.
       content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
     InternalError:
-      description: Error interno seguro.
+      description: A safe internal retrieval error.
       content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
   schemas:
-    SaveUserSetInput:
+    SavedSetsListResponse:
+      type: object
+      required: [status, data]
+      properties:
+        status: { type: string, enum: [success] }
+        data:
+          type: object
+          additionalProperties: false
+          required: [collection, wishlist]
+          properties:
+            collection:
+              type: array
+              items: { $ref: '#/components/schemas/SavedSet' }
+            wishlist:
+              type: array
+              items: { $ref: '#/components/schemas/SavedSet' }
+    SavedSet:
       type: object
       additionalProperties: false
-      required: [destination, set]
+      required: [destination, set, createdAt, updatedAt]
       properties:
         destination: { type: string, enum: [collection, wishlist] }
-        set: { $ref: '#/components/schemas/SetSnapshotInput' }
-    SetSnapshotInput:
+        set: { $ref: '#/components/schemas/SetSnapshot' }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    SetSnapshot:
       type: object
       additionalProperties: false
       required: [setID, number, numberVariant, name, year, theme, category, released, pieces]
@@ -97,29 +105,10 @@ components:
         retailPrice: { type: number, minimum: 0 }
         dateFirstAvailable: { type: string, format: date-time }
         dateLastAvailable: { type: string, format: date-time }
-    SavedSet:
-      type: object
-      required: [destination, set, createdAt, updatedAt, created]
-      properties:
-        destination: { type: string, enum: [collection, wishlist] }
-        set: { $ref: '#/components/schemas/SetSnapshotInput' }
-        createdAt: { type: string, format: date-time }
-        updatedAt: { type: string, format: date-time }
-        created: { type: boolean }
-    SavedSetResponse:
-      type: object
-      required: [status, data]
-      properties:
-        status: { type: string, enum: [success] }
-        data:
-          type: object
-          required: [savedSet]
-          properties:
-            savedSet: { $ref: '#/components/schemas/SavedSet' }
     ErrorResponse:
       type: object
       required: [status, code, message]
       properties:
         status: { type: string, enum: [error] }
-        code: { type: string, enum: [VALIDATION_ERROR, UNAUTHENTICATED, INTERNAL_ERROR] }
+        code: { type: string, enum: [UNAUTHENTICATED, INTERNAL_ERROR] }
         message: { type: string }

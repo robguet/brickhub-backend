@@ -1,8 +1,8 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 
 import type { AuthenticatedUser } from "../../shared/authenticated-user";
-import type { SaveResult, SavedSet, SavedSetRepository } from "./saved-set.types";
+import { savedSetDestinations, type SaveResult, type SavedSet, type SavedSetRepository, type SavedSetsList } from "./saved-set.types";
 
 const defaultClient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
@@ -10,9 +10,15 @@ function key(sub: string, setID: number): Record<string, string> {
   return { PK: `USER#${sub}`, SK: `SAVED_SET#${setID}` };
 }
 
-function toSavedSet(item: Record<string, unknown>): SavedSet {
+function toSavedSet(item: Record<string, unknown>): SavedSet | undefined {
   const { destination, set, createdAt, updatedAt } = item;
-  return { destination, set, createdAt, updatedAt } as SavedSet;
+  if (
+    item.entityType !== "SAVED_SET"
+    || !savedSetDestinations.includes(destination as (typeof savedSetDestinations)[number])
+    || typeof set !== "object" || set === null
+    || typeof createdAt !== "string" || typeof updatedAt !== "string"
+  ) return undefined;
+  return { destination: destination as SavedSet["destination"], set: set as SavedSet["set"], createdAt, updatedAt };
 }
 
 export class DynamoDbSavedSetRepository implements SavedSetRepository {
@@ -20,6 +26,28 @@ export class DynamoDbSavedSetRepository implements SavedSetRepository {
     private readonly documentClient: DynamoDBDocumentClient = defaultClient,
     private readonly tableName = process.env.USER_DATA_TABLE_NAME,
   ) {}
+
+  public async list(user: AuthenticatedUser): Promise<SavedSetsList> {
+    const savedSets: SavedSetsList = { collection: [], wishlist: [] };
+    let exclusiveStartKey: Record<string, string> | undefined;
+    do {
+      const result = await this.documentClient.send(new QueryCommand({
+        TableName: this.tableName,
+        KeyConditionExpression: "PK = :pk AND begins_with(SK, :prefix)",
+        ExpressionAttributeValues: { ":pk": `USER#${user.sub}`, ":prefix": "SAVED_SET#" },
+        ...(exclusiveStartKey === undefined ? {} : { ExclusiveStartKey: exclusiveStartKey }),
+      }));
+      for (const item of result.Items ?? []) {
+        const savedSet = toSavedSet(item);
+        if (savedSet !== undefined) savedSets[savedSet.destination].push(savedSet);
+      }
+      const lastKey = result.LastEvaluatedKey;
+      exclusiveStartKey = typeof lastKey?.PK === "string" && typeof lastKey.SK === "string"
+        ? { PK: lastKey.PK, SK: lastKey.SK }
+        : undefined;
+    } while (exclusiveStartKey !== undefined);
+    return savedSets;
+  }
 
   public async save(user: AuthenticatedUser, savedSet: SavedSet): Promise<SaveResult> {
     const item = {
@@ -53,6 +81,8 @@ export class DynamoDbSavedSetRepository implements SavedSetRepository {
       ReturnValues: "ALL_NEW",
     }));
     if (existing.Attributes === undefined || existing.Attributes.entityType !== "SAVED_SET") throw new Error("SAVED_SET_CONFLICT_UPDATE_FAILED");
-    return { savedSet: toSavedSet(existing.Attributes), created: false };
+    const updated = toSavedSet(existing.Attributes);
+    if (updated === undefined) throw new Error("SAVED_SET_CONFLICT_UPDATE_FAILED");
+    return { savedSet: updated, created: false };
   }
 }

@@ -248,12 +248,19 @@ Resources:
         - AWSLambdaBasicExecutionRole
         - Statement:
             Effect: Allow
-            Action: [dynamodb:PutItem, dynamodb:UpdateItem]
+            Action: [dynamodb:PutItem, dynamodb:UpdateItem, dynamodb:Query]
             Resource: !GetAtt UserDataTable.Arn
       Environment:
         Variables:
           USER_DATA_TABLE_NAME: !Ref UserDataTable
       Events:
+        ListSavedSets:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: GET
+            Path: /v1/saved-sets
+            Auth: { Authorizer: CognitoJwtAuthorizer }
         SaveUserSet:
           Type: HttpApi
           Properties:

@@ -12,6 +12,12 @@ export interface Barcode {
   EAN: string;
 }
 
+export interface LegoComAvailability {
+  retailPrice?: number;
+  dateFirstAvailable?: string;
+  dateLastAvailable?: string;
+}
+
 export interface SetSnapshotInput {
   setID: number;
   number: string;
@@ -32,6 +38,7 @@ export interface SetSnapshotInput {
   reviewCount?: number;
   packagingType?: string;
   barcode?: Barcode;
+  LEGOCom?: Record<string, LegoComAvailability>;
   lastUpdated?: string;
 }
 
@@ -52,6 +59,12 @@ export interface SaveResult {
   created: boolean;
 }
 
+export interface SavedSetsList {
+  collection: SavedSet[];
+  wishlist: SavedSet[];
+}
+
 export interface SavedSetRepository {
   save(user: AuthenticatedUser, savedSet: SavedSet): Promise<SaveResult>;
+  list(user: AuthenticatedUser): Promise<SavedSetsList>;
 }

@@ -8,6 +8,11 @@ const timestampSchema = z.string().refine(
 );
 const httpsUrlSchema = z.url().refine((value) => value.startsWith("https://"), "Debe ser una URL HTTPS.");
 const nonEmpty = (max: number) => z.string().trim().min(1).max(max);
+const legoComAvailabilitySchema = z.object({
+  retailPrice: z.number().nonnegative().optional(),
+  dateFirstAvailable: timestampSchema.optional(),
+  dateLastAvailable: timestampSchema.optional(),
+}).strict();
 
 export const setSnapshotSchema = z.object({
   setID: z.number().int().positive(),
@@ -29,6 +34,7 @@ export const setSnapshotSchema = z.object({
   reviewCount: z.number().int().nonnegative().optional(),
   packagingType: nonEmpty(100).optional(),
   barcode: z.object({ EAN: z.string().regex(/^\d{8,14}$/) }).strict().optional(),
+  LEGOCom: z.record(z.string().regex(/^[A-Z]{2}$/), legoComAvailabilitySchema).optional(),
   lastUpdated: timestampSchema.optional(),
 }).strict();
 

@@ -8,6 +8,14 @@ import type { SavedSetsService } from "./saved-sets.service";
 export class SavedSetsController {
   public constructor(private readonly service: SavedSetsService) {}
 
+  public async list(user: AuthenticatedUser): Promise<APIGatewayProxyStructuredResultV2> {
+    try {
+      return collectionSuccessResponse(200, await this.service.list(user));
+    } catch {
+      return collectionErrorResponse(500, "INTERNAL_ERROR", "No fue posible consultar los sets guardados.");
+    }
+  }
+
   public async save(user: AuthenticatedUser, body: unknown): Promise<APIGatewayProxyStructuredResultV2> {
     const parsed = saveUserSetSchema.safeParse(body);
     if (!parsed.success) {
