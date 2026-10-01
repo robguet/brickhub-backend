@@ -42,3 +42,5 @@ export const saveUserSetSchema = z.object({
   destination: z.enum(savedSetDestinations),
   set: setSnapshotSchema,
 }).strict();
+
+export const savedSetIdSchema = z.coerce.number().int().positive();

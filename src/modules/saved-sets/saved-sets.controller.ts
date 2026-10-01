@@ -2,7 +2,7 @@ import type { APIGatewayProxyStructuredResultV2 } from "aws-lambda";
 
 import type { AuthenticatedUser } from "../../shared/authenticated-user";
 import { collectionErrorResponse, collectionSuccessResponse } from "../../shared/http-response";
-import { saveUserSetSchema } from "./saved-set.schemas";
+import { savedSetIdSchema, saveUserSetSchema } from "./saved-set.schemas";
 import type { SavedSetsService } from "./saved-sets.service";
 
 export class SavedSetsController {
@@ -29,6 +29,18 @@ export class SavedSetsController {
       return collectionSuccessResponse(result.created ? 201 : 200, { savedSet: { ...result.savedSet, created: result.created } });
     } catch {
       return collectionErrorResponse(500, "INTERNAL_ERROR", "No fue posible guardar el set.");
+    }
+  }
+
+  public async delete(user: AuthenticatedUser, setID: string | undefined): Promise<APIGatewayProxyStructuredResultV2> {
+    const parsed = savedSetIdSchema.safeParse(setID);
+    if (!parsed.success) return collectionErrorResponse(400, "VALIDATION_ERROR", "El identificador no es válido.");
+    try {
+      return await this.service.delete(user, parsed.data)
+        ? collectionSuccessResponse(200, { setID: parsed.data, deleted: true })
+        : collectionErrorResponse(404, "RESOURCE_NOT_FOUND", "El set no existe.");
+    } catch {
+      return collectionErrorResponse(500, "INTERNAL_ERROR", "No fue posible eliminar el set.");
     }
   }
 }

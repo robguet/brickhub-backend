@@ -12,4 +12,8 @@ export class SavedSetsService {
   public list(user: AuthenticatedUser): Promise<SavedSetsList> {
     return this.repository.list(user);
   }
+
+  public delete(user: AuthenticatedUser, setID: number): Promise<boolean> {
+    return this.repository.delete(user, setID);
+  }
 }

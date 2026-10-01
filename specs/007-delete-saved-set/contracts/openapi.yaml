@@ -1,0 +1,65 @@
+openapi: 3.0.3
+info:
+  title: BrickHub Saved Sets Deletion API
+  version: 1.0.0
+  description: Private operation that removes one saved catalog snapshot owned by the authenticated user.
+paths:
+  /v1/saved-sets/{setID}:
+    parameters:
+      - name: setID
+        in: path
+        required: true
+        schema: { type: integer, minimum: 1 }
+    delete:
+      summary: Delete a saved set owned by the authenticated user
+      operationId: deleteSavedSet
+      security: [{ CognitoAccessToken: [] }]
+      responses:
+        '200':
+          description: Deletion confirmed.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DeleteSavedSetResponse' }
+        '400': { $ref: '#/components/responses/ValidationError' }
+        '401': { $ref: '#/components/responses/Unauthenticated' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+components:
+  securitySchemes:
+    CognitoAccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    ValidationError:
+      description: The saved-set identifier is invalid.
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+    Unauthenticated:
+      description: The Bearer JWT is missing or invalid.
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+    NotFound:
+      description: The saved set does not exist or is not accessible to the authenticated user.
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+    InternalError:
+      description: A safe internal deletion error.
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+  schemas:
+    DeleteSavedSetResponse:
+      type: object
+      required: [status, data]
+      properties:
+        status: { type: string, enum: [success] }
+        data:
+          type: object
+          additionalProperties: false
+          required: [setID, deleted]
+          properties:
+            setID: { type: integer, minimum: 1 }
+            deleted: { type: boolean, enum: [true] }
+    ErrorResponse:
+      type: object
+      required: [status, code, message]
+      properties:
+        status: { type: string, enum: [error] }
+        code: { type: string, enum: [VALIDATION_ERROR, UNAUTHENTICATED, RESOURCE_NOT_FOUND, INTERNAL_ERROR] }
+        message: { type: string }

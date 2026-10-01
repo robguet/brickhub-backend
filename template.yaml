@@ -248,7 +248,7 @@ Resources:
         - AWSLambdaBasicExecutionRole
         - Statement:
             Effect: Allow
-            Action: [dynamodb:PutItem, dynamodb:UpdateItem, dynamodb:Query]
+            Action: [dynamodb:PutItem, dynamodb:UpdateItem, dynamodb:Query, dynamodb:DeleteItem]
             Resource: !GetAtt UserDataTable.Arn
       Environment:
         Variables:
@@ -267,6 +267,13 @@ Resources:
             ApiId: !Ref BrickHubApi
             Method: POST
             Path: /v1/saved-sets
+            Auth: { Authorizer: CognitoJwtAuthorizer }
+        DeleteSavedSet:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: DELETE
+            Path: /v1/saved-sets/{setID}
             Auth: { Authorizer: CognitoJwtAuthorizer }
     Metadata:
       BuildMethod: esbuild

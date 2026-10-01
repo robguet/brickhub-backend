@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { DeleteCommand, DynamoDBDocumentClient, PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 
 import type { AuthenticatedUser } from "../../shared/authenticated-user";
 import { savedSetDestinations, type SaveResult, type SavedSet, type SavedSetRepository, type SavedSetsList } from "./saved-set.types";
@@ -84,5 +84,20 @@ export class DynamoDbSavedSetRepository implements SavedSetRepository {
     const updated = toSavedSet(existing.Attributes);
     if (updated === undefined) throw new Error("SAVED_SET_CONFLICT_UPDATE_FAILED");
     return { savedSet: updated, created: false };
+  }
+
+  public async delete(user: AuthenticatedUser, setID: number): Promise<boolean> {
+    try {
+      await this.documentClient.send(new DeleteCommand({
+        TableName: this.tableName,
+        Key: key(user.sub, setID),
+        ConditionExpression: "attribute_exists(PK) AND attribute_exists(SK) AND entityType = :entityType",
+        ExpressionAttributeValues: { ":entityType": "SAVED_SET" },
+      }));
+      return true;
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === "ConditionalCheckFailedException") return false;
+      throw error;
+    }
   }
 }

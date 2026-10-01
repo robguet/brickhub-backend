@@ -67,4 +67,5 @@ export interface SavedSetsList {
 export interface SavedSetRepository {
   save(user: AuthenticatedUser, savedSet: SavedSet): Promise<SaveResult>;
   list(user: AuthenticatedUser): Promise<SavedSetsList>;
+  delete(user: AuthenticatedUser, setID: number): Promise<boolean>;
 }

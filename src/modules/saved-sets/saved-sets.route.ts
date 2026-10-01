@@ -14,5 +14,6 @@ export async function savedSetsRoute(event: APIGatewayProxyEventV2, instance = c
   if (user === undefined) return collectionErrorResponse(401, "UNAUTHENTICATED", "La autenticación es requerida.");
   if (event.requestContext.http.method === "GET") return instance.list(user);
   if (event.requestContext.http.method === "POST") return instance.save(user, parseBody(event));
+  if (event.requestContext.http.method === "DELETE") return instance.delete(user, event.pathParameters?.setID);
   return collectionErrorResponse(404, "RESOURCE_NOT_FOUND", "La ruta no existe.");
 }

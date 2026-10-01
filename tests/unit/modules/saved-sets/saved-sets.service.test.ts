@@ -8,7 +8,7 @@ const input = { destination: "collection" as const, set: { setID: 1, number: "1"
 describe("SavedSetsService", () => {
   it("persists the supplied snapshot under the authenticated user with generated UTC timestamps", async () => {
     let captured: SavedSet | undefined;
-    const repository: SavedSetRepository = { save: async (_user, savedSet) => { captured = savedSet; return { savedSet, created: true }; }, list: async () => ({ collection: [], wishlist: [] }) };
+    const repository: SavedSetRepository = { save: async (_user, savedSet) => { captured = savedSet; return { savedSet, created: true }; }, list: async () => ({ collection: [], wishlist: [] }), delete: async () => false };
     const result = await new SavedSetsService(repository).save({ sub: "trusted" }, input);
     expect(captured).toMatchObject({ destination: "collection", set: input.set });
     expect(captured?.createdAt).toMatch(/Z$/);
@@ -22,8 +22,21 @@ describe("SavedSetsService", () => {
     const repository: SavedSetRepository = {
       save: async (_user, savedSet) => ({ savedSet, created: true }),
       list: async (user) => { receivedSub = user.sub; return expected; },
+      delete: async () => false,
     };
     await expect(new SavedSetsService(repository).list({ sub: "trusted" })).resolves.toEqual(expected);
     expect(receivedSub).toBe("trusted");
+  });
+
+  it("delegates deletion to the repository using only the authenticated user and set ID", async () => {
+    let received: { sub: string; setID: number } | undefined;
+    const repository: SavedSetRepository = {
+      save: async (_user, savedSet) => ({ savedSet, created: true }),
+      list: async () => ({ collection: [], wishlist: [] }),
+      delete: async (user, setID) => { received = { sub: user.sub, setID }; return true; },
+    };
+
+    await expect(new SavedSetsService(repository).delete({ sub: "trusted" }, 51931)).resolves.toBe(true);
+    expect(received).toEqual({ sub: "trusted", setID: 51931 });
   });
 });

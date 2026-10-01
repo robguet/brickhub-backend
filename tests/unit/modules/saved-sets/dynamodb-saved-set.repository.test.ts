@@ -64,4 +64,21 @@ describe("DynamoDbSavedSetRepository", () => {
     expect(result.collection).toEqual([]);
     expect(result.wishlist).toHaveLength(1);
   });
+
+  it("conditionally deletes only the authenticated user's saved-set key", async () => {
+    const sent: Array<{ input: Record<string, unknown> }> = [];
+    const client = { send: async (command: { input: Record<string, unknown> }) => { sent.push(command); return {}; } };
+    await expect(new DynamoDbSavedSetRepository(client as never, "table").delete({ sub: "user-a" }, 51931)).resolves.toBe(true);
+    expect(sent[0]?.input).toMatchObject({
+      TableName: "table",
+      Key: { PK: "USER#user-a", SK: "SAVED_SET#51931" },
+      ConditionExpression: "attribute_exists(PK) AND attribute_exists(SK) AND entityType = :entityType",
+      ExpressionAttributeValues: { ":entityType": "SAVED_SET" },
+    });
+  });
+
+  it("reports a conditional delete failure as not found", async () => {
+    const client = { send: async () => { const error = new Error("missing"); error.name = "ConditionalCheckFailedException"; throw error; } };
+    await expect(new DynamoDbSavedSetRepository(client as never, "table").delete({ sub: "user-b" }, 51931)).resolves.toBe(false);
+  });
 });
