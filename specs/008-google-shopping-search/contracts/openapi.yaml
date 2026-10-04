@@ -1,0 +1,500 @@
+openapi: 3.0.3
+info:
+  title: BrickHub Google Shopping Search API
+  version: 1.0.0
+  description: >-
+    Búsqueda privada de una página; device desktop y sort_by 2 (precio mayor a menor) fijos. No se
+    aceptan parámetros adicionales ni credenciales del proveedor. Las respuestas se limitan a 5 MiB
+    de proxy serializado; overflow produce 502 sin truncar datos.
+paths:
+  /v1/shopping/search:
+    get:
+      operationId: searchShopping
+      summary: Buscar productos en el mercado seleccionado
+      security:
+        - CognitoAccessToken: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: >-
+            Texto de búsqueda, tras quitar espacios exteriores. Un valor repetido o vacío es
+            inválido.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: hl
+          in: query
+          required: false
+          description: Idioma; conservar valores explícitos. Un valor repetido o vacío es inválido.
+          schema:
+            type: string
+            default: es-mx
+            pattern: ^[A-Za-z]{2,3}(-[A-Za-z]{2})?$
+        - name: gl
+          in: query
+          required: false
+          description: País de contexto. Un valor repetido o vacío es inválido.
+          schema:
+            type: string
+            default: mx
+            pattern: ^[A-Za-z]{2}$
+        - name: google_domain
+          in: query
+          required: false
+          description: >-
+            Dominio de Google, validación sintáctica case-insensitive. Un valor repetido o vacío es
+            inválido.
+          schema:
+            type: string
+            default: google.com.mx
+            pattern: >-
+              ^[Gg][Oo][Oo][Gg][Ll][Ee]\.(?:[Cc][Oo][Mm]|[A-Za-z]{2}|(?:[Cc][Oo][Mm]|[Cc][Oo])\.[A-Za-z]{2})$
+        - name: location
+          in: query
+          required: false
+          description: Ubicación sin caracteres de control. Un valor repetido o vacío es inválido.
+          schema:
+            type: string
+            default: Mexico
+            minLength: 1
+            maxLength: 200
+            pattern: ^[^\u0000-\u001F\u007F-\u009F]+$
+      responses:
+        '200':
+          description: Productos validados; shopping_results puede ser vacío.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingSuccessResponse'
+              example:
+                status: success
+                data:
+                  shopping_results:
+                    - position: 1
+                      title: LEGO Star Wars Destructor Estelar Imperial 75394
+                      product_id: '6789801949246787910'
+                      source: Mercado Libre y más
+                      price: MXN 1,251.89 ahora
+                      extracted_price: 1251.89
+                  search_information:
+                    total_results: 0
+                    country: México
+        '400':
+          description: Query inválida; nombres desconocidos, vacíos y duplicados se rechazan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Bearer ausente/inválido. Gateway puede rechazar antes de Lambda con su formato nativo.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                  - $ref: '#/components/schemas/GatewayUnauthorized'
+        '429':
+          description: Límite del proveedor; no se reintenta automáticamente.
+          headers:
+            Retry-After:
+              description: Segundos de espera, solo si proveedor aporta un valor válido.
+              schema:
+                type: integer
+                minimum: 1
+                maximum: 86400
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Fallo interno o secreto no disponible; mensaje saneado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Proveedor no disponible, timeout, datos inválidos o tamaño excesivo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  securitySchemes:
+    CognitoAccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >-
+        Token de sesión emitido por Cognito para BrickHub; usar access token. Gateway valida firma,
+        emisor, audiencia y vigencia, sin scopes nuevos.
+  schemas:
+    ShoppingSuccessResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+        data:
+          $ref: '#/components/schemas/ShoppingSearchData'
+      required:
+        - status
+        - data
+    ShoppingSearchData:
+      type: object
+      additionalProperties: false
+      properties:
+        shopping_results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShoppingProduct'
+        search_parameters:
+          $ref: '#/components/schemas/NullableSearchParameters'
+        search_information:
+          $ref: '#/components/schemas/NullableSearchInformation'
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShoppingFilter'
+          nullable: true
+        pagination:
+          $ref: '#/components/schemas/NullableShoppingPagination'
+        categorized_shopping_results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShoppingCategory'
+          nullable: true
+      required:
+        - shopping_results
+    ShoppingProduct:
+      type: object
+      additionalProperties: false
+      properties:
+        position:
+          type: integer
+          minimum: 1
+        title:
+          type: string
+          minLength: 1
+        product_id:
+          type: string
+          minLength: 1
+          description: Identificador opaco como texto; nunca convertir a number.
+          nullable: true
+        catalog_id:
+          type: string
+          minLength: 1
+          nullable: true
+        product_link:
+          type: string
+          format: uri
+          pattern: ^https?://
+          description: URL saneada sin credenciales.
+          nullable: true
+        source:
+          type: string
+          nullable: true
+        source_icon:
+          $ref: '#/components/schemas/NullableShoppingImage'
+        price:
+          type: string
+          description: Precio formateado original, incluida su moneda.
+          nullable: true
+        extracted_price:
+          type: number
+          minimum: 0
+          nullable: true
+        rating:
+          type: number
+          minimum: 0
+          maximum: 5
+          nullable: true
+        reviews:
+          type: integer
+          minimum: 0
+          nullable: true
+        thumbnail:
+          $ref: '#/components/schemas/NullableShoppingImage'
+        immersive_product_page_token:
+          type: string
+          description: Referencia opaca de detalle, no credencial de usuario/proveedor.
+          nullable: true
+        installment:
+          type: object
+          additionalProperties: false
+          properties:
+            text:
+              type: string
+              nullable: true
+          nullable: true
+        alternative_price:
+          type: object
+          additionalProperties: false
+          properties:
+            price:
+              type: string
+              nullable: true
+            extracted_price:
+              type: number
+              minimum: 0
+              nullable: true
+          nullable: true
+      required:
+        - position
+        - title
+    ShoppingImage:
+      type: string
+      pattern: ^(https?://|data:image/(png|jpeg|webp|gif);base64,)
+      description: URL HTTP(S) o imagen base64 permitida; sin esquemas ejecutables.
+    SearchParameters:
+      type: object
+      additionalProperties: false
+      properties:
+        engine:
+          type: string
+          nullable: true
+        q:
+          type: string
+          nullable: true
+        google_domain:
+          type: string
+          nullable: true
+        hl:
+          type: string
+          nullable: true
+        gl:
+          type: string
+          nullable: true
+        device:
+          type: string
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        uule:
+          type: string
+          nullable: true
+        start:
+          type: integer
+          minimum: 0
+          nullable: true
+        sort_by:
+          type: integer
+          minimum: 0
+          nullable: true
+    SearchInformation:
+      type: object
+      additionalProperties: false
+      properties:
+        page_title:
+          type: string
+          nullable: true
+        query_displayed:
+          type: string
+          nullable: true
+        organic_results_state:
+          type: string
+          nullable: true
+        shopping_results_state:
+          type: string
+          nullable: true
+        results_for:
+          type: string
+          nullable: true
+        country:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        total_results:
+          type: integer
+          minimum: 0
+          nullable: true
+        time_taken_displayed:
+          type: number
+          minimum: 0
+          nullable: true
+    ShoppingFilter:
+      type: object
+      additionalProperties: false
+      properties:
+        input_type:
+          type: string
+          nullable: true
+        type:
+          type: string
+          nullable: true
+        options:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              text:
+                type: string
+                nullable: true
+              shoprs:
+                type: string
+                nullable: true
+          nullable: true
+    ShoppingPagination:
+      type: object
+      additionalProperties: false
+      properties:
+        current:
+          type: integer
+          minimum: 0
+          nullable: true
+        next:
+          type: string
+          pattern: ^/plugin/google/shopping(?:\?|$)
+          description: Continuación relativa saneada; informativa, no se sigue automáticamente.
+          nullable: true
+        previous:
+          type: string
+          pattern: ^/plugin/google/shopping(?:\?|$)
+          nullable: true
+    ShoppingCategory:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+        shopping_results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShoppingProduct'
+      required:
+        - title
+        - shopping_results
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          enum:
+            - error
+        code:
+          type: string
+          enum:
+            - VALIDATION_ERROR
+            - UNAUTHENTICATED
+            - INTERNAL_ERROR
+            - UPSTREAM_RATE_LIMITED
+            - UPSTREAM_UNAVAILABLE
+            - UPSTREAM_INVALID_RESPONSE
+            - UPSTREAM_RESPONSE_TOO_LARGE
+        message:
+          type: string
+      required:
+        - status
+        - code
+        - message
+    GatewayUnauthorized:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+      description: Formato de plataforma para rechazo previo a Lambda; excepción acotada descrita en plan.md.
+      additionalProperties: false
+    NullableShoppingImage:
+      type: string
+      pattern: ^(https?://|data:image/(png|jpeg|webp|gif);base64,)
+      description: URL HTTP(S) o imagen base64 permitida; sin esquemas ejecutables.
+      nullable: true
+    NullableSearchParameters:
+      type: object
+      additionalProperties: false
+      properties:
+        engine:
+          type: string
+          nullable: true
+        q:
+          type: string
+          nullable: true
+        google_domain:
+          type: string
+          nullable: true
+        hl:
+          type: string
+          nullable: true
+        gl:
+          type: string
+          nullable: true
+        device:
+          type: string
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        uule:
+          type: string
+          nullable: true
+        start:
+          type: integer
+          minimum: 0
+          nullable: true
+        sort_by:
+          type: integer
+          minimum: 0
+          nullable: true
+      nullable: true
+    NullableSearchInformation:
+      type: object
+      additionalProperties: false
+      properties:
+        page_title:
+          type: string
+          nullable: true
+        query_displayed:
+          type: string
+          nullable: true
+        organic_results_state:
+          type: string
+          nullable: true
+        shopping_results_state:
+          type: string
+          nullable: true
+        results_for:
+          type: string
+          nullable: true
+        country:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        total_results:
+          type: integer
+          minimum: 0
+          nullable: true
+        time_taken_displayed:
+          type: number
+          minimum: 0
+          nullable: true
+      nullable: true
+    NullableShoppingPagination:
+      type: object
+      additionalProperties: false
+      properties:
+        current:
+          type: integer
+          minimum: 0
+          nullable: true
+        next:
+          type: string
+          pattern: ^/plugin/google/shopping(?:\?|$)
+          description: Continuación relativa saneada; informativa, no se sigue automáticamente.
+          nullable: true
+        previous:
+          type: string
+          pattern: ^/plugin/google/shopping(?:\?|$)
+          nullable: true
+      nullable: true

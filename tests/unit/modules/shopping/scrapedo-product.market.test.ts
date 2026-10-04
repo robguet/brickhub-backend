@@ -1,0 +1,5 @@
+import { expect,it,vi } from "vitest";
+import { ScrapeDoClient } from "../../../../src/modules/shopping/scrapedo.client";
+import { shoppingProductQuerySchema } from "../../../../src/modules/shopping/shopping-product.schemas";
+import { productSample,productQuery,deadline } from "../../../fixtures/shopping/product-helpers";
+it("sends effective custom market exactly and preserves independent response metadata",async()=>{const data=productSample();const request=vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify(data)));const query=shoppingProductQuerySchema.parse({...productQuery,q:"LEGO México & +,75394",hl:"en",gl:"us",google_domain:"google.com",location:"Austin, Texas, United States"});expect(await new ScrapeDoClient(request).getProduct({apiKey:"fake-key"},query,deadline())).toEqual(data);const url=new URL(String(request.mock.calls[0]?.[0]));for(const [key,value]of Object.entries(query))expect(url.searchParams.get(key)).toBe(value);expect(url.searchParams.size).toBe(9);});

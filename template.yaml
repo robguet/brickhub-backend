@@ -11,6 +11,9 @@ Parameters:
   BricksetSecretArn:
     Type: String
     Description: ARN del secreto de Brickset en AWS Secrets Manager
+  ScrapeDoSecretArn:
+    Type: String
+    Description: ARN del secreto existente scrapedo en AWS Secrets Manager
   IosCallbackUrl:
     Type: String
     Description: Callback URL registrado para BrickHub iOS
@@ -174,6 +177,86 @@ Resources:
     UpdateReplacePolicy: Delete
     Properties:
       LogGroupName: !Sub /aws/lambda/brickhub-${Environment}-search-sets
+      RetentionInDays: 14
+
+  SearchShoppingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub brickhub-${Environment}-search-shopping
+      CodeUri: .
+      Handler: src/handlers/search-shopping.handler
+      Description: Busca productos de Google Shopping mediante ScrapeDo
+      Timeout: 29
+      MemorySize: 256
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Ref ScrapeDoSecretArn
+      Environment:
+        Variables:
+          SCRAPE_DO_SECRET_ARN: !Ref ScrapeDoSecretArn
+      Events:
+        SearchShopping:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: GET
+            Path: /v1/shopping/search
+            Auth: { Authorizer: CognitoJwtAuthorizer }
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints: [src/handlers/search-shopping.ts]
+        Minify: true
+        Sourcemap: true
+        Target: es2022
+
+  SearchShoppingFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub /aws/lambda/brickhub-${Environment}-search-shopping
+      RetentionInDays: 14
+
+  GetShoppingProductFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub brickhub-${Environment}-get-shopping-product
+      CodeUri: .
+      Handler: src/handlers/get-shopping-product.handler
+      Description: Consulta detalles y tiendas de Google Shopping mediante ScrapeDo
+      Timeout: 29
+      MemorySize: 256
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Ref ScrapeDoSecretArn
+      Environment:
+        Variables:
+          SCRAPE_DO_SECRET_ARN: !Ref ScrapeDoSecretArn
+      Events:
+        GetShoppingProduct:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: GET
+            Path: /v1/shopping/product
+            Auth: { Authorizer: CognitoJwtAuthorizer }
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints: [src/handlers/get-shopping-product.ts]
+        Minify: true
+        Sourcemap: true
+        Target: es2022
+
+  GetShoppingProductFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub /aws/lambda/brickhub-${Environment}-get-shopping-product
       RetentionInDays: 14
 
   CollectionSetsFunction:
@@ -348,6 +431,9 @@ Outputs:
   SearchSetsUrl:
     Description: Endpoint de búsqueda de sets
     Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/sets
+  SearchShoppingUrl:
+    Description: URL de búsqueda protegida en Google Shopping
+    Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/shopping/search
   CollectionSetsUrl:
     Description: URL de colección protegida
     Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/collection/sets
@@ -366,3 +452,7 @@ Outputs:
   UserDataTableName:
     Description: Tabla compartida de perfiles y colecciones de usuario
     Value: !Ref UserDataTable
+
+  ShoppingProductUrl:
+    Description: Consulta privada de detalles y tiendas de Google Shopping
+    Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/shopping/product

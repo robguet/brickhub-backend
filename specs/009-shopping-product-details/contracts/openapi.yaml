@@ -1,0 +1,1011 @@
+openapi: 3.0.3
+info:
+  title: BrickHub Google Shopping Product API
+  version: 1.0.0
+  description: >-
+    Endpoint privado independiente de búsqueda. Máximo4MiB upstream y5MiB proxy completo; timeout
+    total menor30s. Propiedades conocidas validadas; desconocidas omitidas. Credenciales privadas
+    nunca se devuelven.
+paths:
+  /v1/shopping/product:
+    get:
+      operationId: getShoppingProduct
+      summary: Consultar detalles y tiendas de un catálogo elegido
+      security:
+        - CognitoAccessToken: []
+      parameters:
+        - name: catalog_id
+          in: query
+          required: true
+          description: >-
+            Identificador regional del catálogo, preservado como cadena tras trim exterior; no todo
+            cero. No usar product_id como sustituto.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+            pattern: ^(?=[0-9]*[1-9])[0-9]{1,100}$
+        - name: q
+          in: query
+          required: true
+          description: >-
+            Texto de búsqueda, tras quitar espacios exteriores. Un valor repetido o vacío es
+            inválido.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 200
+        - name: hl
+          in: query
+          required: false
+          description: Idioma; conservar valores explícitos. Un valor repetido o vacío es inválido.
+          schema:
+            type: string
+            default: es-mx
+            pattern: ^[A-Za-z]{2,3}(-[A-Za-z]{2})?$
+        - name: gl
+          in: query
+          required: false
+          description: País de contexto. Un valor repetido o vacío es inválido.
+          schema:
+            type: string
+            default: mx
+            pattern: ^[A-Za-z]{2}$
+        - name: google_domain
+          in: query
+          required: false
+          description: >-
+            Dominio de Google, validación sintáctica case-insensitive. Un valor repetido o vacío es
+            inválido.
+          schema:
+            type: string
+            default: google.com.mx
+            pattern: >-
+              ^[Gg][Oo][Oo][Gg][Ll][Ee]\.(?:[Cc][Oo][Mm]|[A-Za-z]{2}|(?:[Cc][Oo][Mm]|[Cc][Oo])\.[A-Za-z]{2})$
+        - name: location
+          in: query
+          required: false
+          description: Ubicación sin caracteres de control. Un valor repetido o vacío es inválido.
+          schema:
+            type: string
+            default: Mexico
+            minLength: 1
+            maxLength: 200
+            pattern: ^[^\u0000-\u001F\u007F-\u009F]+$
+      responses:
+        '200':
+          description: >-
+            Detalles validados; stores puede ser vacío; conserva campos opcionales y null. Sin éxito
+            parcial.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingProductSuccessResponse'
+              example:
+                status: success
+                data:
+                  product_results:
+                    title: LEGO Star Wars Destructor Estelar Imperial 75394
+                    product_id: '6789801949246787910'
+                    stores:
+                      - position: 1
+                        name: LEGO.com
+                        link: https://www.lego.com/es-mx/product/imperial-star-destroyer-75394
+                        title: LEGO Destructor Estelar Imperial
+                        tag: Mejor precio
+                        shipping: Entrega gratuita
+                        merchant_id: '210526152'
+                      - position: 2
+                        name: Amazon MX
+                        link: >-
+                          https://www.amazon.com.mx/Destructor-Imperial-Espacial-construcci%C3%B3n-Personajes/dp/B0CRWRY5RM?source=ps-sl-shoppingads-lpcontext&ref_=fplfs&psc=1&smid=AVDBXBAVVSXLQ
+                        title: >-
+                          LEGO Star Wars Destructor Estelar Imperial Nave Espacial, Juguete de
+                          construcción con Darth Vader , Cal Kestis y más Personajes, Regalo para
+                          niños,
+                        shipping: Entrega gratuita
+                        merchant_id: '117094732'
+                      - position: 3
+                        name: Mercado Libre
+                        link: >-
+                          https://www.mercadolibre.com.mx/set-de-construccion-imperial-star-destroyer-75394/p/MLM2087305583?matt_tool=28238160&utm_source=google_shopping&utm_medium=organic&pdp_filters=item_id%3AMLM5495752374&from=gshop
+                        title: Set De Construcción Imperial Star Destroyer 75394
+                        shipping: Entrega gratuita
+                        merchant_id: '735120154'
+                      - position: 4
+                        name: Elektra
+                        logo: >-
+                          https://encrypted-tbn2.gstatic.com/faviconV2?url=https://www.elektra.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.elektra.mx/juguete-de-construccion-lego-star-wars-imperial-star-destroyer-75394-1301808732/p?srsltid=AU7gw4UR0zGvlSNinvK8CByLjLnpWFDxKi0GO4Y3_MHambjFkjvVe1ULOrM
+                        title: Juguete De Construcción Lego Star Wars Imperial Star Destroyer 75394
+                        rating: 4.385
+                        reviews: 1596
+                        price: "MXN\_4,253.00"
+                        extracted_price: 4253
+                        currency: MXN
+                        shipping: Gratis
+                        total: "MXN\_4,253.00"
+                        extracted_total: 4253
+                        details_and_offers:
+                          - Entrega gratuita el jue
+                          - Entrega gratuita el jueves
+                          - En existencia
+                          - "Devoluciones por 30\_días"
+                        merchant_id: '106527040'
+                        thumbnail: >-
+                          https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTPd69nhqbdG-8wzerVFnsUdIfjhagsHOEctA9jircpbYeWSbSYb5WAzcUK-bvU95CoWlXCBGvjOC5Kv_5mhj-Vl7eNQFc59d0UzCmE-g
+                      - position: 5
+                        name: bodegaaurrera.com.mx
+                        logo: >-
+                          https://encrypted-tbn2.gstatic.com/faviconV2?url=https://www.bodegaaurrera.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.bodegaaurrera.com.mx/ip/f/juguete-de-construccion-lego-star-wars-imperial-star-destroyer-75394/00067341939370
+                        title: Juguete de construcción LEGO Star Wars Imperial Star Destroyer 75394
+                        rating: 4.389
+                        reviews: 424
+                        price: "MXN\_5,564.00"
+                        extracted_price: 5564
+                        currency: MXN
+                        tax_hint: +envío
+                        total: "MXN\_5,564.00"
+                        extracted_total: 5564
+                        details_and_offers:
+                          - En existencia
+                        merchant_id: '426406861'
+                        thumbnail: >-
+                          https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSBFf-UG5A_AacM_pqVKG-EbhtpyM5sDuk2wTVjbY6WAu4lchBmBIWE8OwAYvP05Em60ksAF6SeWado7kyLpeZrlqKs7BMzOkadV1l-mw
+                      - position: 6
+                        name: StockX
+                        logo: >-
+                          https://encrypted-tbn2.gstatic.com/faviconV2?url=https://stockx.com&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://stockx.com/es-mx/lego-star-wars-imperial-star-destroyer-set-75394?country=MX&currencyCode=MXN
+                        title: Set LEGO Star Wars Destructor Estelar Imperial 75394
+                        price: "MXN\_3,660.00"
+                        extracted_price: 3660
+                        currency: MXN
+                        shipping: "+ MXN\_300.00"
+                        shipping_extracted: 300
+                        total: "MXN\_3,960.00"
+                        extracted_total: 3960
+                        details_and_offers:
+                          - "Entrega por MXN\_300"
+                          - En existencia
+                        merchant_id: '111829866'
+                        thumbnail: >-
+                          https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcS8qOpb3h86owQAQbjn5hN3cSoVYH8vXD0PJk9J7xCUnOZO8FylW7JCXXg8nI2fhYfTkGSM5LQ5CoZEn3HNklylhHDA-zuS--kRnUxc
+                      - position: 7
+                        name: eBay
+                        logo: >-
+                          https://encrypted-tbn1.gstatic.com/faviconV2?url=https://www.ebay.com&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.ebay.com/itm/187755454577?chn=ps&mkevt=1&mkcid=28&google_free_listing_action=view_item
+                        title: Lego Star Wars Imperial Star Destroyer 75394
+                        price: "MXN\_2,542.33"
+                        extracted_price: 2542.330372
+                        currency: MXN
+                        tax_hint: +envío
+                        total: "MXN\_2,542.33"
+                        extracted_total: 2542.33
+                        details_and_offers:
+                          - En existencia
+                        merchant_id: '118952506'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcS0ESrgysiVqqrTozPlBYE9r_IO6-rrDN0BTgy1Co4zpRs6l5rBpNJ2IE8lioAB6wL6uZknEBJiLNpAci6znI8X0ndBQwMJYBbdJUvNhg
+                      - position: 8
+                        name: ubuy.com.mx
+                        logo: >-
+                          https://encrypted-tbn0.gstatic.com/faviconV2?url=https://www.ubuy.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.ubuy.com.mx/sp/productjp/JNODLI9LK-lego?srsltid=AU7gw4UCbYeaZ-KGpdb9APQ_pP_UIZKGof4m4PCHhHWIBKhjK-gpThrHg4s
+                        title: >-
+                          Lego Star Wars Imperial Star Destroyer Building Toy Set - Build & Display
+                          for Boys & Girls Ages 10+ Birthday Gift - Star Wars, Darth Vader & 6 
+                        rating: 2.62
+                        reviews: 63
+                        price: "MXN\_10,044.00"
+                        extracted_price: 10044
+                        currency: MXN
+                        shipping: "+ MXN\_557.50"
+                        shipping_extracted: 557.5
+                        total: "MXN\_10,601.50"
+                        extracted_total: 10601.5
+                        details_and_offers:
+                          - "Entrega entre el 10 – 14 de oct por MXN\_557.50"
+                          - "Entrega entre el 10–14 de octubre por MXN\_557.50"
+                          - En existencia
+                          - "Devoluciones por 7\_días"
+                        merchant_id: '118590067'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcS87-JRujNmuTLNY3H_iFaDauzqOa3RJYMryFNZPTAzg1519C8CBvxNzSVDXQY0KTUC05Lmioe9pHhLi-mJwSo4VFhwUPjQsewD8kh4
+                      - position: 9
+                        name: Rappi
+                        logo: >-
+                          https://encrypted-tbn3.gstatic.com/faviconV2?url=https://www.rappi.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.rappi.com.mx/p/2467615?store_id=1923790494&store_type=rappimall_parent&market_type=juguetron_lego&product_id=2114983587&master_product_id=2467615&context=product_detail_integration&show_detail=true&region_id=STMX18000000
+                        title: Lego LEGO Star Wars Destructor Estelar Imperial 75394
+                        price: "MXN\_4,449.00"
+                        extracted_price: 4449
+                        currency: MXN
+                        tax_hint: +envío
+                        total: "MXN\_4,449.00"
+                        extracted_total: 4449
+                        details_and_offers:
+                          - En existencia
+                        merchant_id: '5393336565'
+                        thumbnail: >-
+                          https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQgEDAA_1KGccHl0CYVZ99ElqBFWMzC5osWAObU2CtE2aK2WAj7SuDrVpt1ipjbZwRU04tAOhJXt2FgOicH9t7GSVhf7CHsVD901__fNA
+                      - position: 10
+                        name: Mercado Libre
+                        logo: >-
+                          https://encrypted-tbn3.gstatic.com/faviconV2?url=https://www.mercadolibre.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.mercadolibre.com.mx/juguetes-de-construccion-star-wars-set-imperial-star-dest/up/MLMU5244560397?matt_tool=28238160&utm_source=google_shopping&utm_medium=organic&pdp_filters=item_id%3AMLM3537761845&from=gshop
+                        title: Juguetes De Construcción Star Wars Set Imperial Star Dest
+                        price: "MXN\_917.37"
+                        extracted_price: 917.37
+                        currency: MXN
+                        shipping: Gratis
+                        total: "MXN\_917.37"
+                        extracted_total: 917.37
+                        details_and_offers:
+                          - Entrega gratuita
+                          - En existencia
+                        merchant_id: '5851284267'
+                        thumbnail: >-
+                          https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSNN-PsyHGmXNBDu2yNPjpMsXxITqlXpzovWFA119s8DUekK2QVqBZpdicEmdfqtmWXAoo5Frcb88r9x4ONwkRqhK2GstJiBTIXSqw5
+                      - position: 11
+                        name: Mercado Libre
+                        logo: >-
+                          https://encrypted-tbn3.gstatic.com/faviconV2?url=https://www.mercadolibre.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.mercadolibre.com.mx/set-de-juguetes-de-construccion-star-wars-imperial-star-dest/up/MLMU4688267814?matt_tool=28238160&utm_source=google_shopping&utm_medium=organic&pdp_filters=item_id%3AMLM5952312408&from=gshop
+                        title: Set De Juguetes De Construcción Star Wars Imperial Star Dest
+                        price: "MXN\_1,251.89"
+                        extracted_price: 1251.89
+                        currency: MXN
+                        shipping: Gratis
+                        total: "MXN\_1,251.89"
+                        extracted_total: 1251.89
+                        details_and_offers:
+                          - Entrega gratuita
+                          - En existencia
+                        merchant_id: '5832911940'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSGfOes1MORDVzEpOn4wwnEwtILk9IAPUn4gcXfG5SLV95qH4MxhcgqND7GH1PgG6KtNt5P33XcOoBWNmyszpwsTSFKMTjKefGQEAc
+                      - position: 12
+                        name: Amazon
+                        logo: >-
+                          https://encrypted-tbn2.gstatic.com/faviconV2?url=https://www.amazon.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.amazon.com.mx/Destructor-Imperial-Espacial-construcci%C3%B3n-Personajes/dp/B0CRWRY5RM
+                        title: >-
+                          LEGO Star Wars Destructor Estelar Imperial Nave Espacial, Juguete de
+                          construcción con Darth Vader , Cal Kestis y más Personajes, Regalo para
+                          niños, 
+                        rating: 4.61
+                        reviews: 4817
+                        price: "MXN\_3,999.00"
+                        extracted_price: 3999
+                        currency: MXN
+                        tax_hint: +envío
+                        total: "MXN\_3,999.00"
+                        extracted_total: 3999
+                        details_and_offers:
+                          - En existencia
+                        merchant_id: '136901848'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcS_LVabPnotC4yC0QXKZFW9hF0VGn93feXrxSvwpOl0SiST33KePe8I03zqXL-qVCj-X5J0aoGik9RA33WdGmimIsOeYYygOuoNq7qQ
+                      - position: 13
+                        name: Mercado Libre
+                        logo: >-
+                          https://encrypted-tbn3.gstatic.com/faviconV2?url=https://www.mercadolibre.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.mercadolibre.com.mx/set-de-juguetes-de-construccion-star-wars-imperial-star-dest/up/MLMU4877148613?matt_tool=28238160&utm_source=google_shopping&utm_medium=organic&pdp_filters=item_id%3AMLM6058738842&from=gshop
+                        title: Set De Juguetes De Construcción Star Wars Imperial Star Dest
+                        price: "MXN\_1,122.04"
+                        extracted_price: 1122.04
+                        currency: MXN
+                        shipping: Gratis
+                        total: "MXN\_1,122.04"
+                        extracted_total: 1122.04
+                        details_and_offers:
+                          - Entrega gratuita
+                          - En existencia
+                        merchant_id: '5840529957'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSGfOes1MORDVzEpOn4wwnEwtILk9IAPUn4gcXfG5SLV95qH4MxhcgqND7GH1PgG6KtNt5P33XcOoBWNmyszpwsTSFKMTjKefGQEAc
+                      - position: 14
+                        name: Mercado Libre
+                        logo: >-
+                          https://encrypted-tbn3.gstatic.com/faviconV2?url=https://www.mercadolibre.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.mercadolibre.com.mx/set-de-juguetes-de-construccion-star-wars-imperial-star-dest/up/MLMU4804918092?matt_tool=28238160&utm_source=google_shopping&utm_medium=organic&pdp_filters=item_id%3AMLM6017511440&from=gshop
+                        title: Set De Juguetes De Construcción Star Wars Imperial Star Dest
+                        price: "MXN\_1,122.22"
+                        extracted_price: 1122.22
+                        currency: MXN
+                        shipping: Gratis
+                        total: "MXN\_1,122.22"
+                        extracted_total: 1122.22
+                        details_and_offers:
+                          - Entrega gratuita
+                          - En existencia
+                        merchant_id: '5841630679'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSGfOes1MORDVzEpOn4wwnEwtILk9IAPUn4gcXfG5SLV95qH4MxhcgqND7GH1PgG6KtNt5P33XcOoBWNmyszpwsTSFKMTjKefGQEAc
+                      - position: 15
+                        name: Mercado Libre
+                        logo: >-
+                          https://encrypted-tbn3.gstatic.com/faviconV2?url=https://www.mercadolibre.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.mercadolibre.com.mx/set-de-juguetes-de-construccion-star-wars-imperial-star-de/up/MLMU5172963467?matt_tool=28238160&utm_source=google_shopping&utm_medium=organic&pdp_filters=item_id%3AMLM6229741766&from=gshop
+                        title: '*set De Juguetes De Construcción Star Wars Imperial Star De'
+                        price: "MXN\_1,046.30"
+                        extracted_price: 1046.3
+                        currency: MXN
+                        shipping: Gratis
+                        total: "MXN\_1,046.30"
+                        extracted_total: 1046.3
+                        details_and_offers:
+                          - Entrega gratuita
+                          - En existencia
+                        merchant_id: '5853428509'
+                        thumbnail: >-
+                          https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTvgwNxflh2hI9tfDJmMQJfrUB7RmKiDmaXyT8HxahHNoRMx-zldzJF2gAQAju5skTfuCPzUYfmVZvnNABvq-LX3Mi93MfU6KmCUpp1CA
+                      - position: 16
+                        name: Mercado Libre
+                        logo: >-
+                          https://encrypted-tbn3.gstatic.com/faviconV2?url=https://www.mercadolibre.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.mercadolibre.com.mx/juego-de-juguetes-de-construccion-imperial-de-star-wars-1/p/MLM2096883302?matt_tool=28238160&utm_source=google_shopping&utm_medium=organic&pdp_filters=item_id%3AMLM6317919212&from=gshop
+                        title: Juego De Juguetes De Construcción Imperial De Star Wars 1
+                        price: "MXN\_786.97"
+                        extracted_price: 786.97
+                        currency: MXN
+                        shipping: Gratis
+                        total: "MXN\_786.97"
+                        extracted_total: 786.97
+                        details_and_offers:
+                          - Entrega gratuita
+                          - En existencia
+                        merchant_id: '735123306'
+                        thumbnail: >-
+                          https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTvgwNxflh2hI9tfDJmMQJfrUB7RmKiDmaXyT8HxahHNoRMx-zldzJF2gAQAju5skTfuCPzUYfmVZvnNABvq-LX3Mi93MfU6KmCUpp1CA
+                      - position: 17
+                        name: Mercado Libre
+                        logo: >-
+                          https://encrypted-tbn3.gstatic.com/faviconV2?url=https://www.mercadolibre.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.mercadolibre.com.mx/lego-star-wars-destructor-estelar-imperial-75394-1555/p/MLM2057334619?matt_tool=28238160&utm_source=google_shopping&utm_medium=organic&pdp_filters=item_id%3AMLM5102221994&from=gshop
+                        title: Lego Star Wars Destructor Estelar Imperial (75394) 1555
+                        price: "MXN\_4,140.44"
+                        extracted_price: 4140.44
+                        currency: MXN
+                        shipping: Gratis
+                        total: "MXN\_4,140.44"
+                        extracted_total: 4140.44
+                        details_and_offers:
+                          - Entrega gratuita
+                          - En existencia
+                        merchant_id: '735123861'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTRexgotT_VApYcc2eBnYJvd9Gnzi4TMH1GFeM9vwoze7gyjbkSSWzg2A1p_ihzwxVPglQ5Vx_KEsWnqJHtbvZnTlZXHeVRJtSLJqz7
+                      - position: 18
+                        name: mercadolibre.com.mx
+                        logo: >-
+                          https://encrypted-tbn3.gstatic.com/faviconV2?url=https://www.mercadolibre.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.mercadolibre.com.mx/set-de-juguetes-de-construccion-star-wars-imperial-star-dest/up/MLMU4684296851
+                        title: Set De Juguetes De Construcción Star Wars Imperial Star Dest
+                        rating: 4.707
+                        reviews: 9163
+                        price: "MXN\_1,122.04"
+                        extracted_price: 1122.04
+                        currency: MXN
+                        tax_hint: +envío
+                        total: "MXN\_1,122.04"
+                        extracted_total: 1122.04
+                        details_and_offers:
+                          - En existencia
+                          - "Devoluciones por 30\_días"
+                        merchant_id: '133071505'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRUAfffofbo7cOU2_L_8fWWgtoMbdY2-KWNoEHi9gZNbKYfHXShy02V-UxRSsw9II8Vk2zDKRvYRHsfsy7NOEEurlgGOOqj3ByFtTSNnw
+                      - position: 19
+                        name: Mercado Libre
+                        logo: >-
+                          https://encrypted-tbn3.gstatic.com/faviconV2?url=https://www.mercadolibre.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.mercadolibre.com.mx/set-de-juguetes-de-construccion-star-wars-imperial-star-dest/up/MLMU4804205014?matt_tool=28238160&utm_source=google_shopping&utm_medium=organic&pdp_filters=item_id%3AMLM3345649201&from=gshop
+                        title: Set De Juguetes De Construcción Star Wars Imperial Star Dest
+                        price: "MXN\_1,090.23"
+                        extracted_price: 1090.23
+                        currency: MXN
+                        shipping: Gratis
+                        total: "MXN\_1,090.23"
+                        extracted_total: 1090.23
+                        details_and_offers:
+                          - Entrega gratuita
+                          - En existencia
+                        merchant_id: '5841288517'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSGfOes1MORDVzEpOn4wwnEwtILk9IAPUn4gcXfG5SLV95qH4MxhcgqND7GH1PgG6KtNt5P33XcOoBWNmyszpwsTSFKMTjKefGQEAc
+                      - position: 20
+                        name: Mercado Libre
+                        logo: >-
+                          https://encrypted-tbn3.gstatic.com/faviconV2?url=https://www.mercadolibre.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.mercadolibre.com.mx/juguete-de-construccion-lego-star-wars-imperial-star/up/MLMU5147506370?matt_tool=28238160&utm_source=google_shopping&utm_medium=organic&pdp_filters=item_id%3AMLM3467328797&from=gshop
+                        title: Juguete De Construccion Lego Star Wars Imperial Star
+                        price: "MXN\_6,294.40"
+                        extracted_price: 6294.4
+                        currency: MXN
+                        shipping: Gratis
+                        total: "MXN\_6,294.40"
+                        extracted_total: 6294.4
+                        details_and_offers:
+                          - Entrega gratuita
+                          - En existencia
+                        merchant_id: '5758216204'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRRDTnW_0ySqUrHLM3BSe4ZCOHl7aiY2Kb2ywZ1tCiAwPtfFxqnaniO41wkEWb1WNjeSr9ewqaUs45xT_SGxOyZasSvdu-F3FR8CE6Ujg
+                      - position: 21
+                        name: eBay - wehope2sell
+                        logo: >-
+                          https://encrypted-tbn1.gstatic.com/faviconV2?url=https://www.ebay.com&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.ebay.com/itm/157083782578?chn=ps&mkevt=1&mkcid=28&google_free_listing_action=view_item
+                        title: 'Lego Star Wars: Destructor Estelar Imperial 75394'
+                        price: "MXN\_3,450.37"
+                        extracted_price: 3450.370365
+                        currency: MXN
+                        tax_hint: +envío
+                        total: "MXN\_3,450.37"
+                        extracted_total: 3450.37
+                        details_and_offers:
+                          - En existencia
+                        merchant_id: '5388987985'
+                        thumbnail: >-
+                          https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSzy8AyJbHfsy7gxexdS5Aj1RW05nijplXWcQF0o2pKhxXdA1SdctmM88JEQFI8MxCTzfLLD2tC56mYs8ib3CZKRr6qv95czF_1CpEbmA
+                      - position: 22
+                        name: eBay - adimeo
+                        logo: >-
+                          https://encrypted-tbn1.gstatic.com/faviconV2?url=https://www.ebay.com&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.ebay.com/itm/267258095709?chn=ps&mkevt=1&mkcid=28&google_free_listing_action=view_item
+                        title: Lego Star Wars 75394 Destructor Estelar Imperial
+                        price: "MXN\_3,087.15"
+                        extracted_price: 3087.154368
+                        currency: MXN
+                        tax_hint: +envío
+                        total: "MXN\_3,087.15"
+                        extracted_total: 3087.15
+                        details_and_offers:
+                          - En existencia
+                        merchant_id: '417428927'
+                        thumbnail: >-
+                          https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRqO6J3WHiPmItdFYsZGYQtAH1sOslMX-q4GTlgesgZ613VLBvdLptCMrmNoUXV-FjarLndegn1fj4npQ86Wie83MpT4A1oWDw_8oOQ8Q
+                      - position: 23
+                        name: eBay - item_title_google_cloud_translation_test_for_us_es
+                        logo: >-
+                          https://encrypted-tbn1.gstatic.com/faviconV2?url=https://www.ebay.com&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.ebay.com/itm/267258095709?chn=ps&mkevt=1&mkcid=28&google_free_listing_action=view_item
+                        title: Lego Star Wars 75394 Destructor Estelar Imperial
+                        price: "MXN\_3,087.15"
+                        extracted_price: 3087.154368
+                        currency: MXN
+                        tax_hint: +envío
+                        total: "MXN\_3,087.15"
+                        extracted_total: 3087.15
+                        details_and_offers:
+                          - En existencia
+                        merchant_id: '5817077231'
+                        thumbnail: >-
+                          https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcRqO6J3WHiPmItdFYsZGYQtAH1sOslMX-q4GTlgesgZ613VLBvdLptCMrmNoUXV-FjarLndegn1fj4npQ86Wie83MpT4A1oWDw_8oOQ8Q
+                      - position: 24
+                        name: eBay - familyfirst_562
+                        logo: >-
+                          https://encrypted-tbn1.gstatic.com/faviconV2?url=https://www.ebay.com&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.ebay.com/itm/327285748121?chn=ps&mkevt=1&mkcid=28&google_free_listing_action=view_item
+                        title: Lego Star Wars 75394 Imperial Star Destroyer Darth Vader Cal Kestis
+                        price: "MXN\_2,451.71"
+                        extracted_price: 2451.707981
+                        currency: MXN
+                        tax_hint: +envío
+                        total: "MXN\_2,451.71"
+                        extracted_total: 2451.71
+                        details_and_offers:
+                          - En existencia
+                        merchant_id: '5784204856'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTEB-apA7AIDzKj3jjVQoNqKFEzMd965kN2jlY4EijCLeNBtPsRBSYUGStgV2S76IuCe8xfN6L3FSPSbijo3olWVPRzTa19zLrmXMV-
+                      - position: 25
+                        name: eBay - swami189
+                        logo: >-
+                          https://encrypted-tbn1.gstatic.com/faviconV2?url=https://www.ebay.com&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.ebay.com/itm/226325411351?chn=ps&mkevt=1&mkcid=28&google_free_listing_action=view_item
+                        title: Lego Star Wars Destructor Estelar Imperial Juego De Nave Estelar
+                        price: "MXN\_5,211.97"
+                        extracted_price: 5211.967952
+                        currency: MXN
+                        tax_hint: +envío
+                        total: "MXN\_5,211.97"
+                        extracted_total: 5211.97
+                        details_and_offers:
+                          - En existencia
+                        merchant_id: '5645237369'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTeANYlFxH59UaX9RmPrqGpr6bzkzHNaiSXGxrTEJj0idxHD_yXKZBHzlLnGK8RLzmIi1lx5CKP-oaW-jgM_zDiCzvScBrq8UbaD3P9Qg
+                      - position: 26
+                        name: eBay - mawrsports
+                        logo: >-
+                          https://encrypted-tbn1.gstatic.com/faviconV2?url=https://www.ebay.com&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.ebay.com/itm/127901860315?chn=ps&mkevt=1&mkcid=28&google_free_listing_action=view_item
+                        title: Nuevo Con Caja Lego Star Wars Imperial Star Destroyer 75394 Darth
+                        price: "MXN\_6,173.76"
+                        extracted_price: 6173.763913
+                        currency: MXN
+                        tax_hint: +envío
+                        total: "MXN\_6,173.76"
+                        extracted_total: 6173.76
+                        details_and_offers:
+                          - En existencia
+                        merchant_id: '5388996656'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRBMwzDLr3kKyCBMgAjIm3clBF5WXPa__kMQw9LvH-WgUpxbAMHSuBPbKwNB0s6TK0cq2WVdJioW0zc0MGt8WLXB8W_Wh-L2m6f2epq
+                      - position: 27
+                        name: eBay - adventuresshop
+                        logo: >-
+                          https://encrypted-tbn1.gstatic.com/faviconV2?url=https://www.ebay.com&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.ebay.com/itm/305975548816?chn=ps&mkevt=1&mkcid=28&google_free_listing_action=view_item
+                        title: Set De Juguetes De Construcción Lego Star Wars Imperial Star Destroyer
+                        price: "MXN\_4,002.28"
+                        extracted_price: 4002.277073
+                        currency: MXN
+                        tax_hint: +envío
+                        total: "MXN\_4,002.28"
+                        extracted_total: 4002.28
+                        details_and_offers:
+                          - En existencia
+                        merchant_id: '5620090892'
+                        thumbnail: >-
+                          https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQD5yZDJRj_apKtPSto4xy9O27F4JUeMomja7zweFyP3_RDm3w5X1zvr7vX7kpSsJj7b6Us23vvA0DvE-Lq1mV-yPbRDGn-fr3p0xI1
+                      - position: 28
+                        name: eBay - easybargainfinds
+                        logo: >-
+                          https://encrypted-tbn1.gstatic.com/faviconV2?url=https://www.ebay.com&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.ebay.com/itm/188127948933?chn=ps&mkevt=1&mkcid=28&google_free_listing_action=view_item
+                        title: Lego Star Wars Imperial Star Destroyer Juego De Juguetes De
+                        price: "MXN\_4,249.45"
+                        extracted_price: 4249.445559
+                        currency: MXN
+                        tax_hint: +envío
+                        total: "MXN\_4,249.45"
+                        extracted_total: 4249.45
+                        details_and_offers:
+                          - En existencia
+                        merchant_id: '5550735963'
+                        thumbnail: >-
+                          https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSbMFtzSv5HaVzVnw2CqTzTmHArgszGq_6uVNkX25BI8oIYF1U2lpwt_mW5zuBeXes4a4_SQjeX-B4VBeXDkLlN4DK169t4rqLYWAYo
+                      - position: 29
+                        name: eBay - music-store-japan
+                        logo: >-
+                          https://encrypted-tbn1.gstatic.com/faviconV2?url=https://www.ebay.com&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.ebay.com/itm/256690667893?chn=ps&mkevt=1&mkcid=28&google_free_listing_action=view_item
+                        title: Lego Star Wars Star Wars Star Destroyer Juguete, Regalo De Navidad,
+                        price: "MXN\_5,070.86"
+                        extracted_price: 5070.858537
+                        currency: MXN
+                        tax_hint: +envío
+                        total: "MXN\_5,070.86"
+                        extracted_total: 5070.86
+                        details_and_offers:
+                          - En existencia
+                        merchant_id: '5294141860'
+                        thumbnail: >-
+                          https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcR3S19XlItKySxspo-IWlvud0MabFV6jL_fK_k__oxsAi3wczbxyfpsD53kZPNc1yOZUyxK4pmzFcA-a5DiVRJV_QTuUn6rGOTNww6Uug
+                      - position: 30
+                        name: Coppel
+                        logo: >-
+                          https://encrypted-tbn2.gstatic.com/faviconV2?url=https://www.coppel.com&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.coppel.com/pdp/juguete-construccion-lego-star-wars-imperial-star-destroyer-75394-venta-internacional-mkp-19095210n3215?srsltid=AU7gw4UJ-lHUUlQ2R_063yJNEJR03_FMxfudX9sGBhcBR_RXavshUqmOA1o
+                        title: >-
+                          Juguete de Construcción Lego Star Wars Imperial Star Destroyer 75394 -
+                          Venta Internacional
+                        price: "MXN\_5,084.00"
+                        extracted_price: 5084
+                        currency: MXN
+                        shipping: Gratis
+                        total: "MXN\_5,084.00"
+                        extracted_total: 5084
+                        details_and_offers:
+                          - Entrega gratuita
+                          - Agotado
+                          - "Devoluciones gratis por 30\_días"
+                        merchant_id: '657639046'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSHUDVMoDcp1pvjQ2b7pPHQ2jIlFFKSGgcolhc19W-J9wlyFsEnETQDxuSx1wgyKUqvohwhdRpEytdL8v6NMVo7mGAIh-KD-Wm4Ww3u
+                      - position: 31
+                        name: Coppel
+                        logo: >-
+                          https://encrypted-tbn2.gstatic.com/faviconV2?url=https://www.coppel.com&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.coppel.com/pdp/juguete-lego-star-wars-destructor-estelar-imperial-multicolor-con-darth-vader-cal-kestis-mkp-748300155n6105?srsltid=AU7gw4UcpDwrUw8TUCg_AsB68ljN5eRJbMxPRhPlxMDc3_nxwCym2w55zjU
+                        title: >-
+                          Juguete Lego Star Wars Destructor Estelar Imperial Multicolor Con Darth
+                          Vader Y Cal Kestis
+                        price: "MXN\_5,674.00"
+                        extracted_price: 5674
+                        currency: MXN
+                        shipping: Gratis
+                        total: "MXN\_5,674.00"
+                        extracted_total: 5674
+                        details_and_offers:
+                          - Entrega gratuita
+                          - Agotado
+                          - "Devoluciones gratis por 30\_días"
+                        merchant_id: '5534788168'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSHUDVMoDcp1pvjQ2b7pPHQ2jIlFFKSGgcolhc19W-J9wlyFsEnETQDxuSx1wgyKUqvohwhdRpEytdL8v6NMVo7mGAIh-KD-Wm4Ww3u
+                      - position: 32
+                        name: Mercado Libre
+                        logo: >-
+                          https://encrypted-tbn3.gstatic.com/faviconV2?url=https://www.mercadolibre.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.mercadolibre.com.mx/set-de-juguetes-de-construccion-star-wars-imperial-star-dest/up/MLMU4570895469?matt_tool=28238160&utm_source=google_shopping&utm_medium=organic&pdp_filters=item_id%3AMLM3248138183&from=gshop
+                        title: Set De Juguetes De Construcción Star Wars Imperial Star Dest
+                        price: "MXN\_974.69"
+                        extracted_price: 974.69
+                        currency: MXN
+                        shipping: Gratis
+                        total: "MXN\_974.69"
+                        extracted_total: 974.69
+                        details_and_offers:
+                          - Entrega gratuita
+                          - Agotado
+                        merchant_id: '5834868020'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSGfOes1MORDVzEpOn4wwnEwtILk9IAPUn4gcXfG5SLV95qH4MxhcgqND7GH1PgG6KtNt5P33XcOoBWNmyszpwsTSFKMTjKefGQEAc
+                      - position: 33
+                        name: Mercado Libre
+                        logo: >-
+                          https://encrypted-tbn3.gstatic.com/faviconV2?url=https://www.mercadolibre.com.mx&client=SHOPPING&size=32&type=FAVICON&fallback_opts=TYPE,SIZE,URL
+                        link: >-
+                          https://www.mercadolibre.com.mx/set-de-juguetes-de-construccion-star-wars-imperial-star-dest/up/MLMU4591869004?matt_tool=28238160&utm_source=google_shopping&utm_medium=organic&pdp_filters=item_id%3AMLM3246274341&from=gshop
+                        title: Set De Juguetes De Construcción Star Wars Imperial Star Dest
+                        price: "MXN\_974.69"
+                        extracted_price: 974.69
+                        currency: MXN
+                        shipping: Gratis
+                        total: "MXN\_974.69"
+                        extracted_total: 974.69
+                        details_and_offers:
+                          - Entrega gratuita
+                          - Agotado
+                        merchant_id: '5834086365'
+                        thumbnail: >-
+                          https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSGfOes1MORDVzEpOn4wwnEwtILk9IAPUn4gcXfG5SLV95qH4MxhcgqND7GH1PgG6KtNt5P33XcOoBWNmyszpwsTSFKMTjKefGQEAc
+                    more_options:
+                      - title: Lego Star Wars Commander Praji + Blaster - 75394 Destructor Estelar
+                        product_id: '14604706219397461218'
+                      - title: Lego Star Wars 75394 Destructor Estelar Imperial Minifiguras - Cal
+                        product_id: '9596553375625106580'
+                      - title: 'Lego Star Wars: A New Hope Imperial Star Destroyer 75252 Kit'
+                        product_id: '5298838224169124568'
+                      - title: Lego Star Wars 75394 Destructor Estelar Imperial Minifigs - Cal
+                        product_id: '15502035680408762628'
+                      - title: Z Star Wars 75055 Destructor Imperial Estelar Construcción
+                        product_id: '15192494348368162353'
+                      - title: LEGO Star Wars Superdestructor Estelar Ejecutor 75356
+                        product_id: '1920175306092780203'
+                      - title: >-
+                          LEGO Star Wars E-Wing de la Nueva República vs Caza Estelar de Shin Hati
+                          75364
+                        product_id: '14859421197970133408'
+                      - title: lego star wars the ghost 75127 lego
+                        product_id: '14550389086003917542'
+                    extension_ids:
+                      catalog_id: '6789801949246787910'
+                    source: catalog_oapv
+                  search_parameters:
+                    catalog_id: '6789801949246787910'
+                    device: desktop
+                    engine: google_shopping_product
+                    gl: mx
+                    google_domain: google.com
+                    hl: es-mx
+                    load_all_stores: true
+                    product_id: '6789801949246787910'
+                    q: LEGO 75394
+        '400':
+          description: Query inválida; nombres desconocidos, vacíos y duplicados se rechazan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Bearer ausente/inválido. Gateway puede rechazar antes de Lambda con su formato nativo.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                  - $ref: '#/components/schemas/GatewayUnauthorized'
+        '429':
+          description: Límite del proveedor; no se reintenta automáticamente.
+          headers:
+            Retry-After:
+              description: Segundos de espera, solo si proveedor aporta un valor válido.
+              schema:
+                type: integer
+                minimum: 1
+                maximum: 86400
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Fallo interno o secreto no disponible; mensaje saneado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: >-
+            Proveedor no disponible, timeout, producto malformado, expansión parcial anunciada o
+            tamaño excesivo; sin datos parciales.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      description: >-
+        El consumidor llama después de búsqueda con el catálogo del mismo mercado. Una consulta por
+        producto; load_all_stores y more_stores fijos true no son parámetros públicos. Query
+        desconocida o repetida devuelve400. Resultado parcial anunciado por proveedor devuelve502.
+        No se sigue paginación ni se consultan alternativas.
+components:
+  securitySchemes:
+    CognitoAccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >-
+        Token de sesión emitido por Cognito para BrickHub; usar access token. Gateway valida firma,
+        emisor, audiencia y vigencia, sin scopes nuevos.
+  schemas:
+    ShoppingProductSuccessResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          enum:
+            - success
+        data:
+          $ref: '#/components/schemas/ShoppingProductData'
+      required:
+        - status
+        - data
+    ShoppingProductData:
+      type: object
+      additionalProperties: false
+      properties:
+        product_results:
+          $ref: '#/components/schemas/ProductResults'
+        search_parameters:
+          $ref: '#/components/schemas/NullableProductSearchParameters'
+      required:
+        - product_results
+    ProductResults:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+        product_id:
+          type: string
+          nullable: true
+          minLength: 1
+        stores:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShoppingStore'
+        more_options:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/MoreOption'
+        extension_ids:
+          $ref: '#/components/schemas/NullableExtensionIds'
+        source:
+          type: string
+          nullable: true
+      required:
+        - title
+        - stores
+    ShoppingStore:
+      type: object
+      additionalProperties: false
+      properties:
+        position:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+          minLength: 1
+        link:
+          type: string
+          nullable: true
+          format: uri
+          pattern: ^https?://
+          description: HTTP(S) sin userinfo; parámetros de credencial retirados.
+        title:
+          type: string
+          nullable: true
+        tag:
+          type: string
+          nullable: true
+        merchant_id:
+          type: string
+          nullable: true
+          minLength: 1
+        logo:
+          $ref: '#/components/schemas/NullableShoppingImage'
+        thumbnail:
+          $ref: '#/components/schemas/NullableShoppingImage'
+        rating:
+          type: number
+          minimum: 0
+          nullable: true
+          maximum: 5
+        reviews:
+          type: integer
+          minimum: 0
+          nullable: true
+        price:
+          type: string
+          nullable: true
+        extracted_price:
+          type: number
+          minimum: 0
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        shipping:
+          type: string
+          nullable: true
+        shipping_extracted:
+          type: number
+          minimum: 0
+          nullable: true
+        tax_hint:
+          type: string
+          nullable: true
+        total:
+          type: string
+          nullable: true
+        extracted_total:
+          type: number
+          minimum: 0
+          nullable: true
+        details_and_offers:
+          type: array
+          items:
+            type: string
+          nullable: true
+      required:
+        - position
+        - name
+    MoreOption:
+      type: object
+      additionalProperties: false
+      properties:
+        title:
+          type: string
+          minLength: 1
+        product_id:
+          type: string
+          minLength: 1
+      required:
+        - title
+        - product_id
+    NullableExtensionIds:
+      type: object
+      additionalProperties: false
+      properties:
+        catalog_id:
+          type: string
+          nullable: true
+          minLength: 1
+      nullable: true
+    NullableProductSearchParameters:
+      type: object
+      additionalProperties: false
+      properties:
+        engine:
+          type: string
+          nullable: true
+        q:
+          type: string
+          nullable: true
+        hl:
+          type: string
+          nullable: true
+        gl:
+          type: string
+          nullable: true
+        google_domain:
+          type: string
+          nullable: true
+        location:
+          type: string
+          nullable: true
+        device:
+          type: string
+          nullable: true
+        catalog_id:
+          type: string
+          nullable: true
+          minLength: 1
+        product_id:
+          type: string
+          nullable: true
+          minLength: 1
+        load_all_stores:
+          type: boolean
+          nullable: true
+        more_stores:
+          type: boolean
+          nullable: true
+      nullable: true
+    NullableShoppingImage:
+      type: string
+      pattern: ^(https?://|data:image/(png|jpeg|webp|gif);base64,)
+      description: URL HTTP(S) o imagen base64 permitida; sin esquemas ejecutables.
+      nullable: true
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          enum:
+            - error
+        code:
+          type: string
+          enum:
+            - VALIDATION_ERROR
+            - UNAUTHENTICATED
+            - INTERNAL_ERROR
+            - UPSTREAM_RATE_LIMITED
+            - UPSTREAM_UNAVAILABLE
+            - UPSTREAM_INVALID_RESPONSE
+            - UPSTREAM_RESPONSE_TOO_LARGE
+        message:
+          type: string
+      required:
+        - status
+        - code
+        - message
+    GatewayUnauthorized:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+      description: Formato de plataforma para rechazo previo a Lambda; excepción acotada descrita en plan.md.
+      additionalProperties: false

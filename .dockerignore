@@ -1,0 +1,12 @@
+node_modules/
+.git/
+.aws-sam/
+dist/
+build/
+coverage/
+Dockerfile*
+.dockerignore
+*.log*
+.env*
+env/
+.DS_Store

@@ -1,0 +1,4 @@
+import { expect,it,vi } from "vitest";
+import { ScrapeDoRepository } from "../../../../src/modules/shopping/scrapedo.repository";
+import { productSample,productQuery,deadline } from "../../../fixtures/shopping/product-helpers";
+it("uses existing secret for one product call with same deadline",async()=>{const getCredentials=vi.fn().mockResolvedValue({apiKey:"fake-key"});const getProduct=vi.fn().mockResolvedValue(productSample());const search=vi.fn();const d=deadline();const repo=new ScrapeDoRepository({getCredentials},{search,getProduct});expect(await repo.getProduct(productQuery,d)).toEqual(productSample());expect(getCredentials).toHaveBeenCalledExactlyOnceWith(d);expect(getProduct).toHaveBeenCalledExactlyOnceWith({apiKey:"fake-key"},productQuery,d);expect(search).not.toHaveBeenCalled();});
