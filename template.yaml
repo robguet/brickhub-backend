@@ -107,6 +107,111 @@ Resources:
         - AttributeName: SK
           KeyType: RANGE
 
+  AmazonOfferCardsTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Sub brickhub-${Environment}-amazon-offer-cards
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+
+  SeedAmazonOffersFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub brickhub-${Environment}-seed-amazon-offers
+      CodeUri: .
+      Handler: src/modules/amazon-offers/seed-amazon-offers.handler
+      Description: Carga inicial idempotente de cards Amazon
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            Effect: Allow
+            Action: dynamodb:PutItem
+            Resource: !GetAtt AmazonOfferCardsTable.Arn
+      Environment:
+        Variables:
+          AMAZON_OFFER_CARDS_TABLE_NAME: !Ref AmazonOfferCardsTable
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints: [src/modules/amazon-offers/seed-amazon-offers.ts]
+        Minify: true
+        Sourcemap: true
+        Target: es2022
+
+  SeedAmazonOffersFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub /aws/lambda/brickhub-${Environment}-seed-amazon-offers
+      RetentionInDays: 14
+
+  SeedAmazonOffersPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref SeedAmazonOffersFunction
+      Principal: cloudformation.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+
+  SeedAmazonOffers:
+    Type: Custom::AmazonOfferCatalogSeed
+    DependsOn: SeedAmazonOffersPermission
+    Properties:
+      ServiceToken: !GetAtt SeedAmazonOffersFunction.Arn
+      Version: "1"
+
+  GetAmazonOffersFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub brickhub-${Environment}-get-amazon-offers
+      CodeUri: .
+      Handler: src/handlers/get-amazon-offers.handler
+      Description: Entrega las cards públicas de ofertas LEGO en Amazon
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            Effect: Allow
+            Action: dynamodb:Query
+            Resource: !GetAtt AmazonOfferCardsTable.Arn
+      Environment:
+        Variables:
+          AMAZON_OFFER_CARDS_TABLE_NAME: !Ref AmazonOfferCardsTable
+      Events:
+        GetAmazonOffers:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: GET
+            Path: /v1/amazon-offers
+            Auth: { Authorizer: CognitoJwtAuthorizer }
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints: [src/handlers/get-amazon-offers.ts]
+        Minify: true
+        Sourcemap: true
+        Target: es2022
+
+  GetAmazonOffersFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub /aws/lambda/brickhub-${Environment}-get-amazon-offers
+      RetentionInDays: 14
+
   HelloFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -456,3 +561,6 @@ Outputs:
   ShoppingProductUrl:
     Description: Consulta privada de detalles y tiendas de Google Shopping
     Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/shopping/product
+  AmazonOffersUrl:
+    Description: Catálogo público de ofertas LEGO en Amazon
+    Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/amazon-offers

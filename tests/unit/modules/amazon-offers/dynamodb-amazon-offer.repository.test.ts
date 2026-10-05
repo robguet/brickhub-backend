@@ -1,0 +1,7 @@
+import { describe, expect, it, vi } from "vitest";
+import { DynamoDbAmazonOfferRepository } from "../../../../src/modules/amazon-offers/dynamodb-amazon-offer.repository";
+import { card } from "../../../fixtures/amazon-offers/amazon-offer-cards";
+describe("DynamoDbAmazonOfferRepository", () => {
+  it("queries only visible cards in key order and follows pages", async () => { const send = vi.fn().mockResolvedValueOnce({ Items: [card(1, "one")], LastEvaluatedKey: { PK: "x", SK: "x" } }).mockResolvedValueOnce({ Items: [card(2, "two")] }); const offers = await new DynamoDbAmazonOfferRepository({ send } as never, "table").list(); expect(offers).toHaveLength(2); expect(send).toHaveBeenCalledTimes(2); expect(send.mock.calls[0]?.[0].input).toMatchObject({ KeyConditionExpression: "PK = :pk AND begins_with(SK, :prefix)", ExpressionAttributeValues: { ":prefix": "AVAILABLE#" } }); });
+  it("returns an empty catalog and rejects a partial oversized catalog", async () => { const empty = await new DynamoDbAmazonOfferRepository({ send: vi.fn().mockResolvedValue({ Items: [] }) } as never, "table").list(); expect(empty).toEqual([]); const cards = Array.from({ length: 101 }, (_, index) => card(index + 1, `id-${index + 1}`)); await expect(new DynamoDbAmazonOfferRepository({ send: vi.fn().mockResolvedValue({ Items: cards }) } as never, "table").list()).rejects.toThrow("AMAZON_OFFER_LIMIT_EXCEEDED"); });
+});

@@ -1,16 +1,3 @@
-<!--
-Sync Impact Report
-- Version change: 1.0.0 -> 1.1.0
-- Modified principles:
-  - Placeholder principles -> I. Arquitectura serverless y reproducible
-  - Placeholder principles -> II. TypeScript estricto
-  - Placeholder principles -> III. Separación por capas
-  - Placeholder principles -> IV. Contratos API estables
-  - V. Seguridad por defecto: añade el formato obligatorio de secretos de AWS Secrets Manager.
-- Added sections: none
-- Removed sections: none
-- Follow-up TODOs: none
--->
 # BrickHub Backend Constitution
 
 ## Core Principles
@@ -66,6 +53,12 @@ Las rutas privadas DEBEN exigir JWT válido de Cognito y tomar la identidad excl
 DEBE tener permisos IAM mínimos. Logs y errores NO DEBEN exponer headers `Authorization`, tokens,
 passwords, secretos, PII completa, stack traces ni detalles internos. La protección debe existir en cada
 frontera, no depender de la buena conducta del cliente.
+
+Toda ruta HTTP nueva DEBE configurarse con el authorizer JWT de Cognito y validar también, dentro de la
+route, un único header `Authorization: Bearer <token>` con un claim `sub` no vacío antes de construir
+dependencias con I/O. La ausencia, ambigüedad o invalidez del Bearer DEBE responder `401` sin acceder a
+repositorios, secretos ni proveedores. No se permiten nuevas rutas públicas anónimas salvo una excepción
+explícita, acotada y aprobada conforme a esta constitución.
 
 ### VI. Integridad y aislamiento de datos
 
@@ -152,4 +145,4 @@ forma incompatible principios; MINOR para añadir principios o ampliar materialm
 para aclaraciones sin cambio normativo. El Sync Impact Report es material temporal de revisión y DEBE
 eliminarse antes de confirmar la constitución en control de versiones.
 
-**Version**: 1.1.0 | **Ratified**: 2026-09-20 | **Last Amended**: 2026-09-27
+**Version**: 1.2.0 | **Ratified**: 2026-09-20 | **Last Amended**: 2026-10-04

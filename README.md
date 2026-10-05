@@ -18,6 +18,21 @@ Respuesta:
 ```
 
 ```http
+GET /v1/amazon-offers
+```
+
+Devuelve el catálogo de cards LEGO en Amazon; requiere `Authorization: Bearer <Cognito access token>`.
+La respuesta mantiene el envelope `{ "status": "success", "data": { "offers": [] } }`
+y cada card contiene únicamente `title`, `discount`, `url` e `image`. Las cards disponibles
+se leen de la tabla de DynamoDB exclusiva y se ordenan por la posición editorial. Una lista
+vacía es válida; un fallo de datos o de lectura devuelve un `500` seguro sin resultados parciales.
+
+La infraestructura declara una carga inicial idempotente de las cinco promociones de Amazon. La
+carga solo inserta cards ausentes y no borra ni sobrescribe cambios posteriores. No existe CRUD
+público de estas cards. El contrato está en
+[`specs/010-amazon-offer-cards/contracts/openapi.yaml`](specs/010-amazon-offer-cards/contracts/openapi.yaml).
+
+```http
 GET /v1/sets?query=10212&pageNumber=1&pageSize=20
 ```
 

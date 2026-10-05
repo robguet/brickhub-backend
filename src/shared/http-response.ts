@@ -49,3 +49,15 @@ export function collectionErrorResponse(
 export function profileSuccessResponse(data: { profile: unknown; created?: boolean }): APIGatewayProxyStructuredResultV2 {
   return { statusCode: 200, headers: collectionJsonHeaders, body: JSON.stringify({ status: "success", ...data }) };
 }
+
+export function amazonOffersSuccessResponse(offers: unknown[]): APIGatewayProxyStructuredResultV2 {
+  return { statusCode: 200, headers: collectionJsonHeaders, body: JSON.stringify({ status: "success", data: { offers } }) };
+}
+
+export function amazonOffersErrorResponse(): APIGatewayProxyStructuredResultV2 {
+  return { statusCode: 500, headers: collectionJsonHeaders, body: JSON.stringify({ status: "error", code: "INTERNAL_ERROR", message: "No fue posible consultar las ofertas de Amazon." }) };
+}
+
+export function amazonOffersUnauthenticatedResponse(): APIGatewayProxyStructuredResultV2 {
+  return { statusCode: 401, headers: collectionJsonHeaders, body: JSON.stringify({ status: "error", code: "UNAUTHENTICATED", message: "La autenticación es requerida." }) };
+}

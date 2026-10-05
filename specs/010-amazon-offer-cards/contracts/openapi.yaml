@@ -1,0 +1,105 @@
+openapi: 3.0.3
+info:
+  title: BrickHub Amazon Offers API
+  version: 1.0.0
+  description: Catálogo protegido de cards de ofertas LEGO en Amazon.
+paths:
+  /v1/amazon-offers:
+    get:
+      operationId: listAmazonOffers
+      summary: Obtener las cards disponibles de ofertas LEGO en Amazon
+      security:
+        - CognitoAccessToken: []
+      description: >-
+        Requiere un Bearer de Cognito válido. Devuelve únicamente las cards disponibles, ordenadas por la
+        posición editorial; una lista vacía es un resultado válido.
+      responses:
+        '200':
+          description: Catálogo consultado correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AmazonOffersSuccessResponse'
+              example:
+                status: success
+                data:
+                  offers:
+                    - title: LEGO Señor de los Anillos
+                      discount: hasta 22%
+                      url: https://www.amazon.com.mx/shop/robguetstudios/list/X3WXTWMAYNAM?ref_=aipsflist
+                      image: https://m.media-amazon.com/images/I/51gw0UWtBJL._AC_.jpg
+                    - title: Promociones Star Wars
+                      discount: 20%, 30% y más
+                      url: https://www.amazon.com.mx/shop/robguetstudios/list/2BYYTGJR5PBWR?ref_=aipsflist
+                      image: /images/home/amazon-offers/star-wars.png
+        '500':
+          description: No fue posible obtener el catálogo de forma segura.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                status: error
+                code: INTERNAL_ERROR
+                message: No fue posible consultar las ofertas de Amazon.
+        '401':
+          description: Falta o es inválido el Bearer de Cognito.
+components:
+  securitySchemes:
+    CognitoAccessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    AmazonOffersSuccessResponse:
+      type: object
+      required: [status, data]
+      properties:
+        status:
+          type: string
+          enum: [success]
+        data:
+          type: object
+          required: [offers]
+          properties:
+            offers:
+              type: array
+              description: Lista ordenada; puede estar vacía.
+              items:
+                $ref: '#/components/schemas/AmazonOffer'
+    AmazonOffer:
+      type: object
+      additionalProperties: false
+      required: [title, discount, url, image]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        discount:
+          type: string
+          minLength: 1
+        url:
+          type: string
+          format: uri
+          pattern: '^https://'
+        image:
+          type: string
+          minLength: 1
+          description: URL HTTPS externa o ruta relativa propia que inicia con `/`.
+          anyOf:
+            - format: uri
+              pattern: '^https://'
+            - pattern: '^/'
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [status, code, message]
+      properties:
+        status:
+          type: string
+          enum: [error]
+        code:
+          type: string
+          enum: [INTERNAL_ERROR]
+        message:
+          type: string
