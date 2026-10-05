@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "sourceSha256": "3b992e33916fca96e3a2a17ab314bc593c761ef2ae5ba7468cd1ff60a2bf1f2b",
+  "mediaObjects": {
+    "/images/radar/at-at.svg": "radar/b7725eb9b5c7b7095a79d475381225446a24370786a14a36556d762fdc99f93c.svg",
+    "/images/radar/author-roberto.svg": "radar/84099933410eefe64b78d20a0b7e9aa88655ced062237c7840034bfdcc492771.svg",
+    "/images/radar/minifigures.svg": "radar/20a6ce457b150b3e7646684293f706ebe06a2614db36dfbf98a74d3a3a5b8e72.svg",
+    "/images/radar/rumors/ciudad-nubes-2027-03.png": "radar/febe06eea3842aede8e33594bbe29fd1d9cea75c08fbffa0f6ef05a1d01768c2.png",
+    "/images/radar/rumors/duelo-bespin-2027-02.png": "radar/bc50525f2aee7f6983eb876f6e718cbadbc53e36eb7ef7df8c69bc73ab8dc00a.png",
+    "/images/radar/rumors/luke-piloto-2027-01.png": "radar/d422f5b4a2ef9dc7522d987940be95b9dcc298a3015f4cefbf321e60e2188d3e.png",
+    "/images/radar/sith-infiltrator.svg": "radar/be777f97988fce1dfc118238621b25e6dbc33fe6e169811d3b07ca04594376f0.svg",
+    "/images/radar/star-destroyer.svg": "radar/c03954ffcd760140b2421d64575a70556495002564fb667cae41078b3c234da0.svg",
+    "/images/radar/tie-interceptor.svg": "radar/a53d8904237fbd82154531d8d40e56eadc1e9929bf24e6008175c822c3d6bc2b.svg",
+    "/images/radar/video-august.svg": "radar/5089a07c9a7d0514e27ec2a8a45571f9e1a2b333859d44e9de1f78a82630740f.svg",
+    "/images/radar/video-details.svg": "radar/e2132b8100ec23506bed2c3f316bbe4cf0e526bcf47349c502fccee516b3b807.svg",
+    "/images/radar/video-rumors.svg": "radar/c036cb248673cc4de1ccba761ca5d4d80f8a997490efc5afb5aafc50c251f15d.svg",
+    "/images/radar/video-tie.svg": "radar/599c31eb45d5813cad80025f50adff7e200364eb9bf6e0e732f81f9545616fac.svg"
+  },
+  "releaseResolutions": [
+    {
+      "setNumber": "75383",
+      "market": "MX",
+      "decision": "keep-date",
+      "releaseDate": "2026-07-22",
+      "reason": "Usuario confirmó fecha 22 de julio y estado Disponible.",
+      "status": "available"
+    }
+  ],
+  "expectedVersions": {},
+  "publishedVideos": [],
+  "publishedReleases": [],
+  "publishConfig": true,
+  "postStatuses": {
+    "tie-interceptor-review": "published",
+    "luke-piloto-escala-rumor": "published",
+    "super-star-destroyer-rumor": "published",
+    "sith-infiltrator-launch": "published",
+    "at-at-review": "published",
+    "exclusive-minifigures-rumor": "published",
+    "top-3-mejores-sets-2025": "published",
+    "opinion-lego-star-wars-2026": "published",
+    "guia-sets-menos-2000": "published"
+  }
+}

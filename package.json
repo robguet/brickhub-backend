@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "radar:import": "esbuild scripts/radar-import.ts --bundle --platform=node --target=node20 --outfile=dist/scripts/radar-import.cjs && node dist/scripts/radar-import.cjs",
+    "radar:load": "esbuild scripts/radar-load-test.ts --bundle --platform=node --target=node20 --outfile=dist/scripts/radar-load-test.cjs && node dist/scripts/radar-load-test.cjs"
   },
   "engines": {
     "node": ">=20"
@@ -27,7 +29,9 @@
   "dependencies": {
     "@aws-lambda-powertools/parameters": "^2.35.0",
     "@aws-sdk/client-dynamodb": "^3.1141.0",
+    "@aws-sdk/client-s3": "^3.1141.0",
     "@aws-sdk/client-secrets-manager": "^3.1136.0",
+    "@aws-sdk/client-sts": "^3.1141.0",
     "@aws-sdk/lib-dynamodb": "^3.1141.0",
     "zod": "^4.6.5"
   }

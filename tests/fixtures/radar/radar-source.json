@@ -1,0 +1,615 @@
+{
+  "copy": {
+    "titleAccent": "Radar",
+    "title": "BrickHub",
+    "description": "Rumores, lanzamientos y reseñas del universo LEGO Star Wars.",
+    "latestTitle": "Lo más nuevo",
+    "videosTitle": "TikToks y Reels",
+    "videosDescription": "Videos cortos, novedades rápidas y lo más viral de la galaxia LEGO Star Wars.",
+    "releaseTitle": "Calendario de lanzamientos",
+    "ratingLabel": "Calificación",
+    "moreVideosLabel": "Ver más videos",
+    "fewerVideosLabel": "Ver menos videos",
+    "allArticlesLabel": "Ver todo el Radar",
+    "fewerArticlesLabel": "Ver menos publicaciones",
+    "fullCalendarLabel": "Ver calendario completo",
+    "compactCalendarLabel": "Ver próximos lanzamientos",
+    "emptyArticlesLabel": "Todavía no hay publicaciones en esta categoría.",
+    "filtersAriaLabel": "Filtrar publicaciones de Radar",
+    "videoLinkLabel": "Abrir video",
+    "articleLinkLabel": "Leer artículo"
+  },
+  "filters": [
+    {
+      "value": "todos",
+      "label": "Todos"
+    },
+    {
+      "value": "rumor",
+      "label": "Rumores"
+    },
+    {
+      "value": "lanzamiento",
+      "label": "Lanzamientos"
+    },
+    {
+      "value": "resena",
+      "label": "Reseñas"
+    },
+    {
+      "value": "top",
+      "label": "TOPS"
+    }
+  ],
+  "videoLimit": 4,
+  "releaseLimit": 3,
+  "upcomingReleasesLimit": 6,
+  "calendar": {
+    "titlePrefix": "Calendario de",
+    "titleAccent": "lanzamientos",
+    "subtitle": "Próximos sets y fechas clave.",
+    "description": "Descubre los próximos lanzamientos de LEGO Star Wars y no te pierdas ningún set.",
+    "previousMonthLabel": "Mes anterior",
+    "nextMonthLabel": "Mes siguiente",
+    "todayLabel": "Hoy",
+    "releaseLabel": "Lanzamiento",
+    "moreReleasesLabel": "más",
+    "closeLabel": "Cerrar",
+    "dayReleasesLabel": "Lanzamientos del día",
+    "emptyMonthLabel": "No hay lanzamientos registrados para este mes.",
+    "upcomingTitle": "Próximos lanzamientos",
+    "emptyUpcomingLabel": "No hay próximos lanzamientos registrados.",
+    "weekdays": [
+      "Lun",
+      "Mar",
+      "Mié",
+      "Jue",
+      "Vie",
+      "Sáb",
+      "Dom"
+    ]
+  },
+  "articles": [
+    {
+      "id": "tie-interceptor-review",
+      "slug": "vale-la-pena-tie-interceptor",
+      "category": "resena",
+      "title": "¿Vale la pena el nuevo TIE Interceptor?",
+      "excerpt": "Análisis completo, opinión y calificación del nuevo set 75382 TIE Interceptor de la colección Ultimate Collector Series.",
+      "image": "/images/radar/tie-interceptor.svg",
+      "imageAlt": "Caza estelar TIE Interceptor construido con bloques sobre un fondo oscuro",
+      "publishedAt": "2026-07-20",
+      "author": {
+        "name": "Roberto",
+        "avatar": "/images/radar/author-roberto.svg"
+      },
+      "rating": 8.5,
+      "featured": true,
+      "type": "review",
+      "tags": [
+        "Star Wars",
+        "UCS",
+        "Imperio"
+      ],
+      "relatedVideo": {
+        "platform": "tiktok",
+        "url": "https://www.tiktok.com/@robguetstudios/video/7665188926570859794",
+        "title": "Video relacionado de BrickHub",
+        "description": "Contenido complementario de @robguetstudios relacionado con este artículo."
+      },
+      "coverImage": {
+        "url": "/images/radar/tie-interceptor.svg",
+        "alt": "LEGO Star Wars TIE Interceptor 75382 construido con bloques"
+      },
+      "set": {
+        "number": "75382",
+        "name": "TIE Interceptor",
+        "theme": "Star Wars",
+        "pieces": 1931,
+        "age": "18+",
+        "releaseDate": "2024-05-01",
+        "msrp": 6499,
+        "currency": "MXN",
+        "image": "/images/radar/tie-interceptor.svg"
+      },
+      "prices": [
+        {
+          "store": "Amazon",
+          "price": 6549,
+          "currency": "MXN",
+          "url": "https://www.amazon.com.mx/"
+        },
+        {
+          "store": "Mercado Libre",
+          "price": 6699,
+          "currency": "MXN",
+          "url": "https://www.mercadolibre.com.mx/"
+        },
+        {
+          "store": "LEGO.com",
+          "price": 6499,
+          "currency": "MXN",
+          "url": "https://www.lego.com/"
+        }
+      ],
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "El TIE Interceptor 75382 llega para reforzar la línea UCS con un diseño icónico, una construcción retadora y una exhibición imponente."
+        },
+        {
+          "type": "prosCons",
+          "title": "Lo mejor y lo no tan bueno",
+          "pros": [
+            "Diseño fiel y agresivo, ideal para exhibición",
+            "Construcción sólida y satisfactoria",
+            "Soporte de exhibición incluido",
+            "Detalles interiores del cockpit logrados"
+          ],
+          "cons": [
+            "Precio elevado",
+            "Sin minifigura",
+            "Algunas secciones repetitivas",
+            "Ocupa espacio en repisas pequeñas"
+          ]
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Experiencia de construcción"
+        },
+        {
+          "type": "paragraph",
+          "text": "La construcción de las alas recompensa la paciencia con una silueta reconocible y llena de detalles."
+        },
+        {
+          "type": "rating",
+          "score": 8.5,
+          "maxScore": 10,
+          "label": "Calificación BrickHub",
+          "summary": "Un gran set para exhibición."
+        }
+      ]
+    },
+    {
+      "id": "luke-piloto-escala-rumor",
+      "slug": "luke-piloto-escala-rumor-2027",
+      "category": "rumor",
+      "type": "rumor",
+      "title": "Tres sets LEGO Star Wars rumoreados para 2027",
+      "excerpt": "Luke piloto a escala, el Duelo en Bespin y una nueva Ciudad de las Nubes aparecen entre los primeros rumores de 2027.",
+      "image": "/images/radar/minifigures.svg",
+      "imageAlt": "Figuras LEGO Star Wars utilizadas como portada del rumor de Luke piloto",
+      "publishedAt": "2026-07-25",
+      "featured": false,
+      "tags": ["Rumor 2027", "Luke Skywalker", "Bespin", "Ciudad de las Nubes"],
+      "relatedVideo": {
+        "platform": "tiktok",
+        "url": "https://www.tiktok.com/@robguetstudios/video/7665188926570859794",
+        "title": "Video relacionado de BrickHub",
+        "description": "Contenido complementario de @robguetstudios relacionado con estos rumores."
+      },
+      "rumorImages": [
+        {
+          "url": "/images/radar/rumors/luke-piloto-2027-01.png",
+          "alt": "Ficha vertical del rumor LEGO Star Wars 2027 sobre Luke piloto a escala, set 75482",
+          "title": "Luke piloto a escala",
+          "summary": "El posible set 75482 tendría 981 piezas, un precio estimado de 100 USD y lanzamiento el 1 de enero.",
+          "rumorStatus": {
+            "status": "unconfirmed",
+            "confidence": "medium",
+            "sourceName": "Información preliminar de la comunidad",
+            "lastUpdatedAt": "2026-07-29",
+            "message": "El número de set, la cantidad de piezas, el precio y la fecha todavía no han sido confirmados por LEGO."
+          }
+        },
+        {
+          "url": "/images/radar/rumors/duelo-bespin-2027-02.png",
+          "alt": "Ficha vertical del rumor LEGO Star Wars 2027 sobre el Duelo en Bespin, set 75480",
+          "title": "Duelo en Bespin",
+          "summary": "El set 75480 estaría compuesto por 718 piezas, costaría cerca de 80 USD y podría conectarse con Ciudad de las Nubes.",
+          "rumorStatus": {
+            "status": "unconfirmed",
+            "confidence": "medium",
+            "sourceName": "Información preliminar de la comunidad",
+            "lastUpdatedAt": "2026-07-29",
+            "message": "La posible conexión con Ciudad de las Nubes, las 718 piezas, el precio y la fecha siguen sin confirmación oficial."
+          }
+        },
+        {
+          "url": "/images/radar/rumors/ciudad-nubes-2027-03.png",
+          "alt": "Ficha vertical del rumor LEGO Star Wars 2027 sobre una nueva Ciudad de las Nubes, set 75494",
+          "title": "Ciudad de las Nubes",
+          "summary": "El posible set 75494 incluiría a Leia, Han, Boba Fett, Lando y Vader, además de un nuevo molde de Han en carbonita.",
+          "rumorStatus": {
+            "status": "unconfirmed",
+            "confidence": "low",
+            "sourceName": "Información preliminar de la comunidad",
+            "lastUpdatedAt": "2026-07-29",
+            "message": "La selección de personajes, el nuevo molde, las piezas, el precio y la conexión con Bespin todavía podrían cambiar."
+          }
+        }
+      ],
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "La información preliminar reúne tres posibles lanzamientos: una figura construible de Luke piloto, un diorama del Duelo en Bespin y una nueva versión de Ciudad de las Nubes."
+        },
+        {
+          "type": "rumorStatus",
+          "status": "unconfirmed",
+          "confidence": "medium",
+          "sourceName": "Información preliminar de la comunidad",
+          "lastUpdatedAt": "2026-07-29",
+          "message": "Los números de set, cantidades de piezas, precios, personajes y fechas mostrados en estas imágenes todavía no han sido confirmados por LEGO."
+        },
+        {
+          "type": "heading",
+          "level": 2,
+          "text": "Qué se rumorea"
+        },
+        {
+          "type": "paragraph",
+          "text": "Los rumores señalan al set 75482 como una figura construible de Luke, al 75480 como un diorama conectado con Bespin y al 75494 como una nueva Ciudad de las Nubes con varios personajes."
+        },
+        {
+          "type": "callout",
+          "tone": "warning",
+          "title": "Información sujeta a cambios",
+          "text": "Los detalles pueden cambiar o resultar incorrectos hasta que exista un anuncio oficial."
+        }
+      ]
+    },
+    {
+      "id": "super-star-destroyer-rumor",
+      "slug": "super-star-destroyer-rumor-2026",
+      "category": "rumor",
+      "title": "UCS Super Star Destroyer rumoreado para 2026",
+      "excerpt": "Más de 6,000 piezas y un posible precio de lanzamiento elevado.",
+      "image": "/images/radar/star-destroyer.svg",
+      "imageAlt": "Destructor estelar de bloques viajando sobre un planeta",
+      "publishedAt": "2026-07-24",
+      "featured": false,
+      "type": "rumor",
+      "tags": ["UCS", "Rumores 2026", "Imperio"],
+      "relatedVideo": {
+        "platform": "tiktok",
+        "url": "https://www.tiktok.com/@robguetstudios/video/7665188926570859794",
+        "title": "Video relacionado de BrickHub",
+        "description": "Contenido complementario de @robguetstudios relacionado con este rumor."
+      },
+      "content": [
+        { "type": "paragraph", "text": "Las primeras conversaciones de la comunidad apuntan a un posible regreso del Super Star Destroyer a la línea UCS con una escala mayor que la versión anterior." },
+        { "type": "rumorStatus", "status": "unconfirmed", "confidence": "medium", "sourceName": "Fuentes de la comunidad", "sourceUrl": "https://www.reddit.com/", "lastUpdatedAt": "2026-07-24", "message": "Esta información no ha sido confirmada por LEGO y puede cambiar antes de cualquier anuncio oficial." },
+        { "type": "heading", "level": 2, "text": "Qué se está comentando" },
+        { "type": "paragraph", "text": "El rumor menciona una nave de más de seis mil piezas, una base de exhibición ampliada y un precio elevado. Por ahora no hay número de set ni fecha oficial." },
+        { "type": "callout", "tone": "warning", "title": "Toma este dato con cautela", "text": "Los rumores ayudan a seguir el calendario, pero no sustituyen un anuncio de LEGO." }
+      ]
+    },
+    {
+      "id": "sith-infiltrator-launch",
+      "slug": "darth-maul-sith-infiltrator-disponible",
+      "category": "lanzamiento",
+      "title": "Ya disponible: Darth Maul’s Sith Infiltrator",
+      "excerpt": "El icónico caza Sith ya llegó a tiendas seleccionadas.",
+      "image": "/images/radar/sith-infiltrator.svg",
+      "imageAlt": "Nave Sith roja y gris construida con bloques",
+      "publishedAt": "2026-07-22",
+      "featured": false,
+      "type": "release",
+      "tags": ["Darth Maul", "Novedades", "Star Wars"],
+      "relatedVideo": {
+        "platform": "tiktok",
+        "url": "https://www.tiktok.com/@robguetstudios/video/7665188926570859794",
+        "title": "Video relacionado de BrickHub",
+        "description": "Contenido complementario de @robguetstudios relacionado con este lanzamiento."
+      },
+      "set": {
+        "number": "75383",
+        "name": "Darth Maul’s Sith Infiltrator",
+        "theme": "Star Wars",
+        "pieces": 642,
+        "age": "9+",
+        "releaseDate": "2026-07-22",
+        "msrp": 1699,
+        "currency": "MXN",
+        "image": "/images/radar/sith-infiltrator.svg"
+      },
+      "prices": [
+        { "store": "Amazon", "price": 1749, "currency": "MXN", "url": "https://www.amazon.com.mx/" },
+        { "store": "Mercado Libre", "price": 1729, "currency": "MXN", "url": "https://www.mercadolibre.com.mx/" },
+        { "store": "LEGO.com", "price": 1699, "currency": "MXN", "url": "https://www.lego.com/es-mx/" }
+      ],
+      "content": [
+        { "type": "paragraph", "text": "Darth Maul’s Sith Infiltrator ya está disponible y recupera uno de los diseños más reconocibles de La amenaza fantasma." },
+        { "type": "releaseInfo", "status": "available", "releaseDate": "2026-07-22", "price": 1699, "currency": "MXN", "availability": ["LEGO.com", "Tiendas LEGO"] },
+        { "type": "heading", "level": 2, "text": "Qué incluye el lanzamiento" },
+        { "type": "paragraph", "text": "La nave incorpora una combinación de paneles oscuros, acentos rojos y un enfoque pensado tanto para jugar como para exhibir." },
+        { "type": "callout", "tone": "info", "title": "Disponibilidad", "text": "Consulta el precio final y el inventario en la tienda de tu preferencia antes de comprar." }
+      ]
+    },
+    {
+      "id": "at-at-review",
+      "slug": "at-at-75313-sigue-siendo-buena-compra",
+      "category": "resena",
+      "title": "AT-AT 75313: ¿Sigue siendo buena compra?",
+      "excerpt": "A casi cuatro años de su lanzamiento, revisamos si todavía vale la pena.",
+      "image": "/images/radar/at-at.svg",
+      "imageAlt": "Caminante AT-AT de bloques sobre un paisaje helado",
+      "publishedAt": "2026-07-18",
+      "rating": 9,
+      "featured": false,
+      "type": "review",
+      "tags": ["UCS", "AT-AT", "Hoth"],
+      "relatedVideo": {
+        "platform": "tiktok",
+        "url": "https://www.tiktok.com/@robguetstudios/video/7665188926570859794",
+        "title": "Video relacionado de BrickHub",
+        "description": "Contenido complementario de @robguetstudios relacionado con esta reseña."
+      },
+      "set": {
+        "number": "75313",
+        "name": "AT-AT",
+        "theme": "Star Wars",
+        "pieces": 6785,
+        "age": "18+",
+        "releaseDate": "2021-11-26",
+        "msrp": 6499,
+        "currency": "MXN",
+        "image": "/images/radar/at-at.svg"
+      },
+      "prices": [
+        { "store": "Amazon", "price": 6599, "currency": "MXN", "url": "https://www.amazon.com.mx/" },
+        { "store": "Mercado Libre", "price": 6799, "currency": "MXN", "url": "https://www.mercadolibre.com.mx/" },
+        { "store": "LEGO.com", "price": 6499, "currency": "MXN", "url": "https://www.lego.com/es-mx/" }
+      ],
+      "content": [
+        { "type": "paragraph", "text": "El AT-AT 75313 sigue siendo una de las piezas más ambiciosas de LEGO Star Wars y conserva una presencia difícil de igualar en una colección UCS." },
+        { "type": "prosCons", "pros": ["Escala espectacular", "Interior amplio", "Construcción memorable"], "cons": ["Requiere mucho espacio", "Precio de entrada alto", "Montaje largo"] },
+        { "type": "rating", "score": 9, "maxScore": 10, "label": "Calificación BrickHub", "summary": "Una recomendación fuerte para quien tenga espacio y disfrute de los sets grandes." }
+      ]
+    },
+    {
+      "id": "exclusive-minifigures-rumor",
+      "slug": "nuevas-minifiguras-exclusivas",
+      "category": "rumor",
+      "title": "Nuevas minifiguras exclusivas en camino",
+      "excerpt": "Tres personajes clásicos podrían regresar con diseños renovados.",
+      "image": "/images/radar/minifigures.svg",
+      "imageAlt": "Tres figuras espaciales de bloques bajo luces rojas",
+      "publishedAt": "2026-07-16",
+      "featured": false,
+      "type": "rumor",
+      "tags": ["Minifiguras", "Coleccionismo", "Rumores"],
+      "relatedVideo": {
+        "platform": "tiktok",
+        "url": "https://www.tiktok.com/@robguetstudios/video/7665188926570859794",
+        "title": "Video relacionado de BrickHub",
+        "description": "Contenido complementario de @robguetstudios relacionado con este rumor."
+      },
+      "content": [
+        { "type": "paragraph", "text": "Tres personajes clásicos podrían volver con diseños actualizados en lanzamientos exclusivos. La información sigue siendo preliminar." },
+        { "type": "rumorStatus", "status": "partially-confirmed", "confidence": "low", "sourceName": "Catálogos preliminares", "lastUpdatedAt": "2026-07-16", "message": "Existen referencias a nuevos personajes, pero todavía no hay imágenes oficiales ni una lista definitiva." },
+        { "type": "paragraph", "text": "Si se confirma, esta oleada podría interesar especialmente a coleccionistas que buscan completar versiones recientes de personajes del Imperio." }
+      ]
+    },
+    {
+      "id": "top-3-mejores-sets-2025",
+      "slug": "top-3-mejores-sets-lego-star-wars-2025",
+      "category": "top",
+      "type": "ranking",
+      "title": "Top 3 mejores sets LEGO Star Wars de 2025",
+      "excerpt": "Tres lanzamientos que destacaron por diseño, construcción y valor para exhibición.",
+      "image": "/images/radar/tie-interceptor.svg",
+      "imageAlt": "Nave TIE Interceptor de bloques para un ranking de sets",
+      "publishedAt": "2026-07-14",
+      "featured": false,
+      "tags": ["Top 3", "2025", "Star Wars"],
+      "relatedVideo": {
+        "platform": "tiktok",
+        "url": "https://www.tiktok.com/@robguetstudios/video/7665188926570859794",
+        "title": "Video relacionado de BrickHub",
+        "description": "Contenido complementario de @robguetstudios relacionado con este TOP."
+      },
+      "content": [
+        { "type": "paragraph", "text": "Este Top 3 compara los sets que mejor equilibraron fidelidad, experiencia de construcción y presencia en una colección durante 2025." },
+        { "type": "setRanking", "title": "Los tres mejores del año", "items": [
+          { "position": 1, "setNumber": "75382", "name": "TIE Interceptor", "image": "/images/radar/tie-interceptor.svg", "description": "La mejor pieza de exhibición para fans de la línea UCS.", "score": 9 },
+          { "position": 2, "setNumber": "75313", "name": "AT-AT", "image": "/images/radar/at-at.svg", "description": "Una construcción monumental con mucho valor de colección.", "score": 8.8 },
+          { "position": 3, "setNumber": "75383", "name": "Darth Maul’s Sith Infiltrator", "image": "/images/radar/sith-infiltrator.svg", "description": "Una opción compacta con una silueta memorable.", "score": 8.4 }
+        ] },
+        { "type": "callout", "tone": "info", "title": "Cómo elegimos", "text": "No es una lista de los más caros: prioriza identidad, acabado y disfrute al construir." }
+      ]
+    },
+    {
+      "id": "opinion-lego-star-wars-2026",
+      "slug": "lego-star-wars-esta-mejorando-en-2026",
+      "category": "resena",
+      "type": "opinion",
+      "title": "LEGO Star Wars está mejorando en 2026",
+      "excerpt": "Una opinión editorial sobre el equilibrio entre modelos de exhibición, juego y nostalgia.",
+      "image": "/images/radar/star-destroyer.svg",
+      "imageAlt": "Destructor estelar de bloques en órbita",
+      "publishedAt": "2026-07-12",
+      "featured": false,
+      "tags": ["Opinión", "2026", "LEGO Star Wars"],
+      "relatedVideo": {
+        "platform": "tiktok",
+        "url": "https://www.tiktok.com/@robguetstudios/video/7665188926570859794",
+        "title": "Video relacionado de BrickHub",
+        "description": "Contenido complementario de @robguetstudios relacionado con esta opinión."
+      },
+      "relatedSets": [{ "number": "75382", "name": "TIE Interceptor" }, { "number": "75383", "name": "Darth Maul’s Sith Infiltrator" }],
+      "content": [
+        { "type": "paragraph", "text": "La línea reciente parece entender mejor que una colección necesita modelos de exhibición ambiciosos y sets accesibles que mantengan viva la variedad." },
+        { "type": "heading", "level": 2, "text": "Más variedad, menos fórmulas" },
+        { "type": "paragraph", "text": "Cuando los lanzamientos alternan escalas, épocas y rangos de precio, la conversación de la comunidad se vuelve más interesante y menos predecible." },
+        { "type": "callout", "tone": "success", "title": "Una señal positiva", "text": "El diseño de 2026 muestra más intención por diferenciar cada set." }
+      ]
+    },
+    {
+      "id": "guia-sets-menos-2000",
+      "slug": "mejores-sets-lego-star-wars-por-menos-de-2000",
+      "category": "lanzamiento",
+      "type": "guide",
+      "title": "Los mejores sets LEGO Star Wars por menos de $2,000",
+      "excerpt": "Guía práctica para encontrar sets con identidad y buen valor sin subir de presupuesto.",
+      "image": "/images/radar/sith-infiltrator.svg",
+      "imageAlt": "Nave Sith de bloques para una guía de compra",
+      "publishedAt": "2026-07-10",
+      "featured": false,
+      "tags": ["Guía", "Compras", "Menos de $2,000"],
+      "relatedVideo": {
+        "platform": "tiktok",
+        "url": "https://www.tiktok.com/@robguetstudios/video/7665188926570859794",
+        "title": "Video relacionado de BrickHub",
+        "description": "Contenido complementario de @robguetstudios relacionado con esta guía."
+      },
+      "content": [
+        { "type": "paragraph", "text": "Un presupuesto definido no obliga a renunciar a un set con carácter. Esta guía parte de tamaño, diseño y posibilidades de exhibición." },
+        { "type": "setCard", "number": "75383", "name": "Darth Maul’s Sith Infiltrator", "image": "/images/radar/sith-infiltrator.svg", "description": "Una elección equilibrada para quien busca una nave reconocible." },
+        { "type": "heading", "level": 2, "text": "Qué conviene priorizar" },
+        { "type": "paragraph", "text": "Busca un set con una silueta clara, una construcción interesante y un tamaño compatible con el espacio real de tu colección." },
+        { "type": "callout", "tone": "info", "title": "Consejo de compra", "text": "Compara precios y disponibilidad antes de decidir; las ofertas pueden cambiar el valor de un set." }
+      ]
+    }
+  ],
+  "videos": [
+    {
+      "id": "rumores-2026",
+      "title": "Rumores de sets para 2026",
+      "platform": "TikTok",
+      "thumbnail": "/images/radar/video-rumors.svg",
+      "thumbnailAlt": "Figura oscura de bloques junto al texto Rumores 2026",
+      "duration": "0:58",
+      "publishedAt": "2026-07-23",
+      "url": "https://www.tiktok.com/"
+    },
+    {
+      "id": "sandcrawler-details",
+      "title": "3 detalles ocultos del nuevo Sandcrawler",
+      "platform": "Instagram Reels",
+      "thumbnail": "/images/radar/video-details.svg",
+      "thumbnailAlt": "Figura de bloques y texto sobre detalles ocultos",
+      "duration": "0:43",
+      "publishedAt": "2026-07-21",
+      "url": "https://www.instagram.com/reels/"
+    },
+    {
+      "id": "tie-interceptor-short",
+      "title": "¿Vale la pena el nuevo TIE Interceptor?",
+      "platform": "TikTok",
+      "thumbnail": "/images/radar/video-tie.svg",
+      "thumbnailAlt": "TIE Interceptor de bloques en formato de video corto",
+      "duration": "0:55",
+      "publishedAt": "2026-07-20",
+      "url": "https://www.tiktok.com/"
+    },
+    {
+      "id": "august-sets",
+      "title": "Nuevos sets que llegan en agosto",
+      "platform": "Instagram Reels",
+      "thumbnail": "/images/radar/video-august.svg",
+      "thumbnailAlt": "Soldado espacial de bloques junto a novedades de agosto",
+      "duration": "0:47",
+      "publishedAt": "2026-07-18",
+      "url": "https://www.instagram.com/reels/"
+    },
+    {
+      "id": "minifigure-guide",
+      "title": "Guía rápida de minifiguras exclusivas",
+      "platform": "TikTok",
+      "thumbnail": "/images/radar/minifigures.svg",
+      "thumbnailAlt": "Minifiguras exclusivas de bloques",
+      "duration": "1:04",
+      "publishedAt": "2026-07-15",
+      "url": "https://www.tiktok.com/"
+    }
+  ],
+  "releases": [
+    {
+      "id": "75383",
+      "setNumber": "75383",
+      "name": "Darth Maul’s Sith Infiltrator",
+      "image": "/images/radar/sith-infiltrator.svg",
+      "imageAlt": "Set 75383 Darth Maul’s Sith Infiltrator",
+      "releaseDate": "2026-08-01",
+      "price": 1699,
+      "currency": "MXN",
+      "status": "Próximamente",
+      "url": "/explore/75383"
+    },
+    {
+      "id": "715383",
+      "setNumber": "75383",
+      "name": "Darth Maul’s Sith Infiltrator",
+      "image": "/images/radar/sith-infiltrator.svg",
+      "imageAlt": "Set 75383 Darth Maul’s Sith Infiltrator",
+      "releaseDate": "2026-08-01",
+      "price": 1699,
+      "currency": "MXN",
+      "status": "Próximamente",
+      "url": "/explore/75383"
+    },
+    {
+      "id": "753823",
+      "setNumber": "75383",
+      "name": "Darth Maul’s Sith Infiltrator",
+      "image": "/images/radar/sith-infiltrator.svg",
+      "imageAlt": "Set 75383 Darth Maul’s Sith Infiltrator",
+      "releaseDate": "2026-08-01",
+      "price": 1699,
+      "currency": "MXN",
+      "status": "Próximamente",
+      "url": "/explore/75383"
+    },
+    {
+      "id": "75383",
+      "setNumber": "75383",
+      "name": "Darth Maul’s Sith Infiltrator",
+      "image": "/images/radar/sith-infiltrator.svg",
+      "imageAlt": "Set 75383 Darth Maul’s Sith Infiltrator",
+      "releaseDate": "2026-08-01",
+      "price": 1699,
+      "currency": "MXN",
+      "status": "Próximamente",
+      "url": "/explore/75383"
+    },
+    {
+      "id": "75384",
+      "setNumber": "75384",
+      "name": "The Ghost (UCS)",
+      "image": "/images/radar/star-destroyer.svg",
+      "imageAlt": "Set 75384 The Ghost de colección",
+      "releaseDate": "2026-09-01",
+      "price": 6499,
+      "currency": "MXN",
+      "status": "Preventa",
+      "url": "/explore/75384"
+    },
+    {
+      "id": "75385",
+      "setNumber": "75385",
+      "name": "Clone Turbo Tank",
+      "image": "/images/radar/at-at.svg",
+      "imageAlt": "Set 75385 Clone Turbo Tank",
+      "releaseDate": "2026-10-01",
+      "price": 2299,
+      "currency": "MXN",
+      "status": "Próximamente",
+      "url": "/explore/75385"
+    },
+    {
+      "id": "75386",
+      "setNumber": "75386",
+      "name": "Mandalorian Starfighter",
+      "image": "/images/radar/tie-interceptor.svg",
+      "imageAlt": "Set 75386 Mandalorian Starfighter",
+      "releaseDate": "2026-11-01",
+      "price": 1899,
+      "currency": "MXN",
+      "status": "Próximamente",
+      "url": "/explore/75386"
+    }
+  ]
+}

@@ -212,6 +212,185 @@ Resources:
       LogGroupName: !Sub /aws/lambda/brickhub-${Environment}-get-amazon-offers
       RetentionInDays: 14
 
+  RadarTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Sub brickhub-${Environment}-radar
+      BillingMode: PAY_PER_REQUEST
+      PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true }
+      AttributeDefinitions:
+        - { AttributeName: PK, AttributeType: S }
+        - { AttributeName: SK, AttributeType: S }
+      KeySchema:
+        - { AttributeName: PK, KeyType: HASH }
+        - { AttributeName: SK, KeyType: RANGE }
+
+  RadarMediaBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: { SSEAlgorithm: AES256 }
+      OwnershipControls:
+        Rules: [{ ObjectOwnership: BucketOwnerEnforced }]
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration: { Status: Enabled }
+      Tags:
+        - { Key: Environment, Value: !Ref Environment }
+
+  RadarMediaOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub brickhub-${Environment}-radar-media
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  RadarMediaDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub BrickHub ${Environment} editorial images
+        HttpVersion: http2and3
+        PriceClass: PriceClass_100
+        Origins:
+          - Id: RadarS3
+            DomainName: !GetAtt RadarMediaBucket.RegionalDomainName
+            OriginAccessControlId: !Ref RadarMediaOriginAccessControl
+            S3OriginConfig: { OriginAccessIdentity: '' }
+        DefaultCacheBehavior:
+          TargetOriginId: RadarS3
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD]
+          CachedMethods: [GET, HEAD]
+          Compress: true
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+        ViewerCertificate: { CloudFrontDefaultCertificate: true }
+
+  RadarMediaBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref RadarMediaBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: cloudfront.amazonaws.com }
+            Action: s3:GetObject
+            Resource: !Sub '${RadarMediaBucket.Arn}/radar/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${RadarMediaDistribution}
+          - Effect: Deny
+            Principal: '*'
+            Action: s3:*
+            Resource: [!GetAtt RadarMediaBucket.Arn, !Sub '${RadarMediaBucket.Arn}/*']
+            Condition: { Bool: { 'aws:SecureTransport': false } }
+
+  RadarImportPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: Attach explicitly to the editorial operator; never to the HTTP Lambda
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: [dynamodb:GetItem, dynamodb:TransactGetItems, dynamodb:TransactWriteItems, dynamodb:DescribeTable]
+            Resource: !GetAtt RadarTable.Arn
+          - Effect: Allow
+            Action: [s3:PutObject, s3:GetObject]
+            Resource: !Sub '${RadarMediaBucket.Arn}/radar/*'
+          - Effect: Allow
+            Action: s3:GetBucketLocation
+            Resource: !GetAtt RadarMediaBucket.Arn
+          - Effect: Allow
+            Action: sts:GetCallerIdentity
+            Resource: '*'
+
+  RadarFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub brickhub-${Environment}-radar
+      CodeUri: .
+      Handler: src/handlers/radar.handler
+      Description: Lecturas autenticadas del contenido editorial Radar
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            Effect: Allow
+            Action: [dynamodb:GetItem, dynamodb:Query, dynamodb:TransactGetItems]
+            Resource: !GetAtt RadarTable.Arn
+      Environment:
+        Variables:
+          RADAR_TABLE_NAME: !Ref RadarTable
+          RADAR_MEDIA_BASE_URL: !Sub https://${RadarMediaDistribution.DomainName}
+      Events:
+        Config:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: GET
+            Path: /v1/radar/config
+            Auth: { Authorizer: CognitoJwtAuthorizer }
+        Posts:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: GET
+            Path: /v1/radar/posts
+            Auth: { Authorizer: CognitoJwtAuthorizer }
+        Featured:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: GET
+            Path: /v1/radar/featured
+            Auth: { Authorizer: CognitoJwtAuthorizer }
+        Detail:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: GET
+            Path: /v1/radar/posts/{slug}
+            Auth: { Authorizer: CognitoJwtAuthorizer }
+        Videos:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: GET
+            Path: /v1/radar/videos
+            Auth: { Authorizer: CognitoJwtAuthorizer }
+        Releases:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BrickHubApi
+            Method: GET
+            Path: /v1/radar/releases
+            Auth: { Authorizer: CognitoJwtAuthorizer }
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        EntryPoints: [src/handlers/radar.ts]
+        Minify: true
+        Sourcemap: true
+        Target: es2022
+
+  RadarFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/brickhub-${Environment}-radar
+      RetentionInDays: 14
+
   HelloFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -564,3 +743,13 @@ Outputs:
   AmazonOffersUrl:
     Description: Catálogo público de ofertas LEGO en Amazon
     Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/amazon-offers
+  RadarTableName:
+    Value: !Ref RadarTable
+  RadarBaseUrl:
+    Value: !Sub https://${BrickHubApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/v1/radar
+  RadarMediaBucketName:
+    Value: !Ref RadarMediaBucket
+  RadarMediaBaseUrl:
+    Value: !Sub https://${RadarMediaDistribution.DomainName}
+  RadarImportPolicyArn:
+    Value: !Ref RadarImportPolicy

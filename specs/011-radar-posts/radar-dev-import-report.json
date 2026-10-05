@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "inputSha256": "3b992e33916fca96e3a2a17ab314bc593c761ef2ae5ba7468cd1ff60a2bf1f2b",
+  "mode": "apply",
+  "generatedAt": "2026-10-05T16:27:51.894Z",
+  "sourceCounts": {
+    "articles": 9,
+    "videos": 5,
+    "releases": 4
+  },
+  "normalizedCounts": {
+    "articles": 9,
+    "videos": 5,
+    "releases": 4
+  },
+  "consolidatedDuplicates": [],
+  "conflicts": [],
+  "rejected": [],
+  "operations": [
+    {
+      "entityId": "POST#tie-interceptor-review",
+      "action": "created",
+      "hash": "13cbf4f8ac3f120cf65b70f05e1a6a4994be373ec95e011bb3a12cd7de8fb2c5"
+    },
+    {
+      "entityId": "POST#luke-piloto-escala-rumor",
+      "action": "created",
+      "hash": "7ae0e629e09a7f7fb811654265e4915f7ee2bbb703cac74d1024780a2b6a21c6"
+    },
+    {
+      "entityId": "POST#super-star-destroyer-rumor",
+      "action": "created",
+      "hash": "faad52f324bb474ae901aba32618595494f73f0bb0232ffe6b46a334bba8882a"
+    },
+    {
+      "entityId": "POST#sith-infiltrator-launch",
+      "action": "created",
+      "hash": "64f7546ad6dacf195073b022f761d79f5df5a041aa230f411c2b3ce4b3daae54"
+    },
+    {
+      "entityId": "POST#at-at-review",
+      "action": "created",
+      "hash": "b1c10dbe1d15dc9b62676434e9f3312fd9d36f91e52051937d571d808adf5118"
+    },
+    {
+      "entityId": "POST#exclusive-minifigures-rumor",
+      "action": "created",
+      "hash": "31045b18603d3f7050240a7f1c7f9c52e9ca2f171a604f2386dbb356717d0460"
+    },
+    {
+      "entityId": "POST#top-3-mejores-sets-2025",
+      "action": "created",
+      "hash": "1a519c36e1a1f302b659f675c1b4e9b4c8121036045073aab4dd8947c3360a73"
+    },
+    {
+      "entityId": "POST#opinion-lego-star-wars-2026",
+      "action": "created",
+      "hash": "1067b3725dbf716f9795418ee596ec144073d342cc807456f8ab159fbec92095"
+    },
+    {
+      "entityId": "POST#guia-sets-menos-2000",
+      "action": "created",
+      "hash": "7bbf47f6ead7c548492eec2d9c531bc56e45e3003465560dcb4f950667cadd11"
+    },
+    {
+      "entityId": "VIDEO#rumores-2026",
+      "action": "created",
+      "hash": "94ab5e8a6778b7ccbc19b7793a4491ded4d2972968b14f078f4f1df5d5d095ed"
+    },
+    {
+      "entityId": "VIDEO#sandcrawler-details",
+      "action": "created",
+      "hash": "845a9f955f97d9fb36d57b0db4073695379aa2cf8c029cf17eb8f441ccd4493c"
+    },
+    {
+      "entityId": "VIDEO#tie-interceptor-short",
+      "action": "created",
+      "hash": "277d97500be66dfcce67e2ba198f1c748a9c06ec17c0feca5be509234ff1d2ec"
+    },
+    {
+      "entityId": "VIDEO#august-sets",
+      "action": "created",
+      "hash": "35de3a8bcfbd55398e97b24008ac4f13e04259e90debc5d0f39c5027beb6f675"
+    },
+    {
+      "entityId": "VIDEO#minifigure-guide",
+      "action": "created",
+      "hash": "23cd8cfd0d7520e70f0c3c21ddac42e6ced4200e1bd1ca355408e6b373f84b62"
+    },
+    {
+      "entityId": "RELEASE#MX-75383-2026-07-22",
+      "action": "created",
+      "hash": "9188356f68e4b08f9c3e8889b4181597a5b40c2a00624b9136bbbe6fcc225de8"
+    },
+    {
+      "entityId": "RELEASE#MX-75384-2026-09-01",
+      "action": "created",
+      "hash": "84cc7962348c587071cfdcfe621ecea82616fa249abb4a74fd6692f591414fdc"
+    },
+    {
+      "entityId": "RELEASE#MX-75385-2026-10-01",
+      "action": "created",
+      "hash": "f3b8f09ecb26759bb7aba4d58644371c25018f8724de8b1a6fb7a7ce5345a656"
+    },
+    {
+      "entityId": "RELEASE#MX-75386-2026-11-01",
+      "action": "created",
+      "hash": "93800e7e6c0147a1bdadbd2a6e162b62cfea5fec02303f139cca057975f0bdf3"
+    },
+    {
+      "entityId": "RADAR#CONFIG",
+      "action": "created",
+      "hash": "1d73a1309b24c879f51900e887a8c06534a9d12d9235661c0d24265ebbdeac32"
+    }
+  ],
+  "appliedResults": [
+    {
+      "entityId": "POST#tie-interceptor-review",
+      "action": "created"
+    },
+    {
+      "entityId": "POST#luke-piloto-escala-rumor",
+      "action": "created"
+    },
+    {
+      "entityId": "POST#super-star-destroyer-rumor",
+      "action": "created"
+    },
+    {
+      "entityId": "POST#sith-infiltrator-launch",
+      "action": "created"
+    },
+    {
+      "entityId": "POST#at-at-review",
+      "action": "created"
+    },
+    {
+      "entityId": "POST#exclusive-minifigures-rumor",
+      "action": "created"
+    },
+    {
+      "entityId": "POST#top-3-mejores-sets-2025",
+      "action": "created"
+    },
+    {
+      "entityId": "POST#opinion-lego-star-wars-2026",
+      "action": "created"
+    },
+    {
+      "entityId": "POST#guia-sets-menos-2000",
+      "action": "created"
+    },
+    {
+      "entityId": "VIDEO#rumores-2026",
+      "action": "created"
+    },
+    {
+      "entityId": "VIDEO#sandcrawler-details",
+      "action": "created"
+    },
+    {
+      "entityId": "VIDEO#tie-interceptor-short",
+      "action": "created"
+    },
+    {
+      "entityId": "VIDEO#august-sets",
+      "action": "created"
+    },
+    {
+      "entityId": "VIDEO#minifigure-guide",
+      "action": "created"
+    },
+    {
+      "entityId": "RELEASE#MX-75383-2026-07-22",
+      "action": "created"
+    },
+    {
+      "entityId": "RELEASE#MX-75384-2026-09-01",
+      "action": "created"
+    },
+    {
+      "entityId": "RELEASE#MX-75385-2026-10-01",
+      "action": "created"
+    },
+    {
+      "entityId": "RELEASE#MX-75386-2026-11-01",
+      "action": "created"
+    },
+    {
+      "entityId": "RADAR#CONFIG",
+      "action": "created"
+    }
+  ],
+  "importReady": true
+}
